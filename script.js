@@ -1,7 +1,7 @@
-// Load inventory from localStorage
+// Load inventory from localStorage (or start empty)
 let inventory = JSON.parse(localStorage.getItem("inventory")) || {};
 
-// Load inventory into table
+// Render inventory in the table
 function loadInventory() {
     const tableBody = document.querySelector("#inventoryTable tbody");
     tableBody.innerHTML = "";
@@ -28,6 +28,7 @@ document.getElementById("stockInBtn").addEventListener("click", () => {
         return;
     }
 
+    // Add to inventory
     if (inventory[product]) {
         inventory[product] += qty;
     } else {
