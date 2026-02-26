@@ -1,78 +1,84 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Inventory Dashboard</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="style.css">
-    <style>
-        /* Basic modern styling for editable table */
-        body { font-family: Arial, sans-serif; background: #f4f6f8; margin:0; }
-        .dashboard { display: flex; }
-        .sidebar { width: 220px; background: #2c3e50; color: white; padding: 20px; }
-        .sidebar h2 { margin-top:0; }
-        .sidebar ul { list-style: none; padding:0; }
-        .sidebar ul li { margin: 10px 0; cursor: pointer; }
-        .main { flex: 1; padding: 20px; }
-        .cards { display: flex; gap: 20px; margin-bottom: 20px; }
-        .card { background: white; padding: 20px; border-radius: 10px; flex:1; text-align:center; box-shadow:0 2px 5px rgba(0,0,0,0.1);}
-        table { width: 100%; border-collapse: collapse; background: white; }
-        th, td { padding: 10px; border: 1px solid #ddd; text-align: center; }
-        th { background: #34495e; color: white; }
-        tr:nth-child(even) { background: #f2f2f2; }
-        td[contenteditable="true"] { background: #fcf8e8; cursor: text; }
-        button { padding: 5px 10px; margin: 0 2px; cursor:pointer; border:none; border-radius:5px; background:#e74c3c; color:white; }
-    </style>
+<meta charset="UTF-8">
+<title>Inventory Dashboard</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="style.css">
+<style>
+body { font-family: Arial, sans-serif; background: #f4f6f8; margin:0; }
+.dashboard { display: flex; }
+.sidebar { width: 220px; background: #2c3e50; color: white; padding: 20px; }
+.sidebar h2 { margin-top:0; }
+.sidebar ul { list-style: none; padding:0; }
+.sidebar ul li { margin: 10px 0; cursor: pointer; }
+.main { flex: 1; padding: 20px; }
+.cards { display: flex; gap: 20px; margin-bottom: 20px; }
+.card { background: white; padding: 20px; border-radius: 10px; flex:1; text-align:center; box-shadow:0 2px 5px rgba(0,0,0,0.1);}
+.table-container { background:white; padding:10px; border-radius:10px; }
+table { width: 100%; border-collapse: collapse; }
+th, td { padding: 10px; border: 1px solid #ddd; text-align: center; }
+th { background: #34495e; color: white; cursor:pointer; }
+tr:nth-child(even) { background: #f2f2f2; }
+td[contenteditable="true"] { background: #fcf8e8; cursor: text; }
+button { padding: 5px 10px; margin: 0 2px; cursor:pointer; border:none; border-radius:5px; background:#e74c3c; color:white; }
+input { padding:5px 10px; margin:10px 0; width:200px; border-radius:5px; border:1px solid #ccc; }
+.low-stock { background:#f8d7da !important; }
+</style>
 </head>
 <body>
 
 <div class="dashboard">
 
-    <div class="sidebar">
-        <h2>Inventory</h2>
-        <ul>
-            <li>Dashboard</li>
-            <li>Products</li>
-        </ul>
-    </div>
+<div class="sidebar">
+<h2>Inventory</h2>
+<ul>
+<li>Dashboard</li>
+<li>Products</li>
+</ul>
+</div>
 
-    <div class="main">
+<div class="main">
 
-        <div class="header">
-            <h1>Inventory Dashboard</h1>
-        </div>
+<div class="header">
+<h1>Inventory Dashboard</h1>
+</div>
 
-        <div class="cards">
-            <div class="card">
-                <h3>Total Products</h3>
-                <p id="totalProducts">0</p>
-            </div>
-            <div class="card">
-                <h3>Total Stock</h3>
-                <p id="totalStock">0</p>
-            </div>
-        </div>
+<div class="cards">
+<div class="card">
+<h3>Total Products</h3>
+<p id="totalProducts">0</p>
+</div>
+<div class="card">
+<h3>Total Stock</h3>
+<p id="totalStock">0</p>
+</div>
+</div>
 
-        <div class="table-container">
-            <table id="inventoryTable">
-                <thead>
-                    <tr>
-                        <th>Product Name</th>
-                        <th>Category</th>
-                        <th>Size / Specification</th>
-                        <th>Unit</th>
-                        <th>Supplier</th>
-                        <th>Unit Price</th>
-                        <th>Current Stock</th>
-                        <th>Updated</th>
-                        <th>Action</th>
-                    </tr>
-                </thead>
-                <tbody></tbody>
-            </table>
-        </div>
+<!-- Search & Add -->
+<input type="text" id="searchBox" placeholder="Search products...">
+<button onclick="addNewProduct()">+ Add Product</button>
 
-    </div>
+<div class="table-container">
+<table id="inventoryTable">
+<thead>
+<tr>
+<th onclick="sortTable(0)">Product Name</th>
+<th onclick="sortTable(1)">Category</th>
+<th onclick="sortTable(2)">Size / Specification</th>
+<th onclick="sortTable(3)">Unit</th>
+<th onclick="sortTable(4)">Supplier</th>
+<th onclick="sortTable(5)">Unit Price</th>
+<th onclick="sortTable(6)">Current Stock</th>
+<th onclick="sortTable(7)">Updated</th>
+<th>Action</th>
+</tr>
+</thead>
+<tbody></tbody>
+</table>
+</div>
+
+</div>
 </div>
 
 <script src="script.js"></script>
