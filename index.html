@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>REGRAY Inventory System</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="container">
+
+    <!-- HEADER -->
+    <h1>REGRAY INVENTORY SYSTEM</h1>
+
+    <!-- SUMMARY CARDS -->
+    <div class="summary">
+        <div class="card">
+            <h3>Total Products</h3>
+            <p id="totalProducts">0</p>
+        </div>
+        <div class="card">
+            <h3>Total Stock: <span id="totalItems">0</span></h3>
+
+            <p id="totalStocks">0</p>
+        </div>
+    </div>
+
+    <!-- STOCK IN / OUT -->
+    <div class="form-section">
+        <h2>Stock In / Stock Out</h2>
+
+        <select id="product"></select>
+        <input type="text" id="category" placeholder="Category" readonly>
+        <input type="number" id="quantity" placeholder="Enter quantity">
+
+        <div class="buttons">
+            <button onclick="stockIn()">Stock In</button>
+            <button onclick="stockOut()" class="danger">Stock Out</button>
+            <button onclick="exportCSV()" class="export">Export CSV</button>
+        </div>
+    </div>
+
+    <!-- ADD NEW PRODUCT -->
+    <div class="form-section">
+        <h2>Add New Product</h2>
+
+        <input type="text" id="newProductName" placeholder="Product Name">
+        <input type="text" id="newProductCategory" placeholder="Category">
+
+        <div class="buttons">
+            <button onclick="addNewProduct()">Add Product</button>
+        </div>
+    </div>
+
+    <!-- SEARCH -->
+    <div class="search-box">
+        <input type="text" id="search" placeholder="Search product..." onkeyup="updateTable()">
+    </div>
+
+    <!-- INVENTORY TABLE -->
+    <table>
+        <thead>
+            <tr>
+                <th>Product</th>
+                <th>Category</th>
+                <th>Quantity</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody id="inventoryTable"></tbody>
+    </table>
+
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
