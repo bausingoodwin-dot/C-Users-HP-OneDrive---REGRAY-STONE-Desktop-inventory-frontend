@@ -14,12 +14,16 @@ function loadInventory() {
         totalQuantity += item.quantity;
 
         const row = document.createElement("tr");
+
         row.innerHTML = `
             <td>${item.product}</td>
             <td>${item.quantity}</td>
             <td>${item.description}</td>
-            <td><button onclick="deleteProduct(${index})">Delete</button></td>
+            <td>
+                <button onclick="deleteProduct(${index})">Delete</button>
+            </td>
         `;
+
         tableBody.appendChild(row);
     });
 
@@ -33,7 +37,7 @@ function deleteProduct(index) {
     loadInventory();
 }
 
-document.getElementById("addBtn").addEventListener("click", () => {
+document.getElementById("addBtn").addEventListener("click", function () {
     const product = document.getElementById("product").value.trim();
     const quantity = parseInt(document.getElementById("quantity").value);
     const description = document.getElementById("description").value.trim();
@@ -44,9 +48,9 @@ document.getElementById("addBtn").addEventListener("click", () => {
     }
 
     inventory.push({
-        product,
-        quantity,
-        description
+        product: product,
+        quantity: quantity,
+        description: description
     });
 
     saveInventory();
@@ -58,4 +62,5 @@ document.getElementById("addBtn").addEventListener("click", () => {
     loadInventory();
 });
 
+// Load when page opens
 loadInventory();
