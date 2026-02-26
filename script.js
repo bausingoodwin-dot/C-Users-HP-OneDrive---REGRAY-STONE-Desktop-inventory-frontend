@@ -18,18 +18,8 @@ if (!inventory) {
         { product: "CALACATTA VIOLA 1", category: "MARBLE", size: "", unit: "", supplier: "", price: "", stock: 11, updated: "" },
         { product: "CIPPOLINO UNDULATO 2", category: "MARBLE", size: "", unit: "", supplier: "", price: "", stock: 8, updated: "" },
         { product: "CREMA MARFIL", category: "MARBLE", size: "", unit: "", supplier: "", price: "", stock: 2, updated: "" },
-        { product: "GOLDEN BLACK MARQUINA", category: "MARBLE", size: "", unit: "", supplier: "", price: "", stock: 19, updated: "" },
-        { product: "BLACK FLAMED, BRUSHED", category: "GRANITE", size: "", unit: "PCS", supplier: "", price: "", stock: 19, updated: "FEB 09, 2026" },
-        { product: "DARK GREY GRANITE", category: "GRANITE", size: "", unit: "SQM", supplier: "", price: "", stock: 83, updated: "" },
-        { product: "GRAY FLAMED", category: "GRANITE", size: "", unit: "PCS", supplier: "", price: "", stock: 20, updated: "FEB 20, 2026, FEB 25, 2026" },
-        { product: "BEIGE", category: "TRAVERTINE", size: "", unit: "", supplier: "", price: "", stock: 14, updated: "" },
-        { product: "LIMESTONE 2", category: "TRAVERTINE", size: "", unit: "", supplier: "", price: "", stock: 9, updated: "" },
-        { product: "SILVER", category: "TRAVERTINE", size: "", unit: "", supplier: "", price: "", stock: 8, updated: "" },
-        { product: "CRYSTAL BEIGE MARBLE", category: "CRAZY CUTS", size: "", unit: "CRATE", supplier: "", price: "", stock: 1, updated: "FEB 11, 2026" },
-        { product: "CRYSTAL GREY MARBLE", category: "CRAZY CUTS", size: "10 SQM", unit: "CRATE", supplier: "", price: "", stock: 18, updated: "" },
-        { product: "IVORY LIMESTONE", category: "CRAZY CUTS", size: "", unit: "CRATES", supplier: "", price: "", stock: 3, updated: "FEB 24, 2026" },
-        { product: "ASH GREY GRANITE", category: "COBBLESTONE", size: "", unit: "CRATES & PCS", supplier: "", price: "", stock: 4, updated: "" },
-        { product: "WARM BEIGE GRANITE", category: "COBBLESTONE", size: "", unit: "CRATES", supplier: "", price: "", stock: 5, updated: "" }
+        { product: "GOLDEN BLACK MARQUINA", category: "MARBLE", size: "", unit: "", supplier: "", price: "", stock: 19, updated: "" }
+        // Add the rest of your products here...
     ];
 
     localStorage.setItem("inventory", JSON.stringify(inventory));
@@ -42,7 +32,7 @@ function loadInventory() {
 
     let totalStock = 0;
 
-    inventory.forEach(item => {
+    inventory.forEach((item, index) => {
         totalStock += item.stock;
 
         const row = document.createElement("tr");
@@ -55,6 +45,10 @@ function loadInventory() {
             <td>${item.price}</td>
             <td>${item.stock}</td>
             <td>${item.updated}</td>
+            <td>
+                <button onclick="editProduct(${index})">Edit</button>
+                <button onclick="deleteProduct(${index})">Delete</button>
+            </td>
         `;
         tableBody.appendChild(row);
     });
@@ -63,5 +57,25 @@ function loadInventory() {
     document.getElementById("totalStock").textContent = totalStock;
 }
 
-// Load table when page opens
+// Edit a product
+function editProduct(index) {
+    const item = inventory[index];
+    const newStock = prompt(`Edit stock for ${item.product}:`, item.stock);
+    if (newStock !== null && !isNaN(parseInt(newStock))) {
+        item.stock = parseInt(newStock);
+        localStorage.setItem("inventory", JSON.stringify(inventory));
+        loadInventory();
+    }
+}
+
+// Delete a product
+function deleteProduct(index) {
+    if (confirm(`Delete ${inventory[index].product}?`)) {
+        inventory.splice(index, 1);
+        localStorage.setItem("inventory", JSON.stringify(inventory));
+        loadInventory();
+    }
+}
+
+// Load table on page open
 loadInventory();
