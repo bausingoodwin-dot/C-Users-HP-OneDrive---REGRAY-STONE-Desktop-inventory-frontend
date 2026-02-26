@@ -12,22 +12,21 @@
 
     <!-- Sidebar -->
     <div class="sidebar">
-        <h2>Inventory</h2>
+        <h2>My Inventory</h2>
         <ul>
             <li>Dashboard</li>
             <li>Products</li>
-            <li>Reports</li>
         </ul>
     </div>
 
-    <!-- Main Content -->
+    <!-- Main -->
     <div class="main">
 
         <div class="header">
             <h1>Inventory Dashboard</h1>
         </div>
 
-        <!-- Stats Cards -->
+        <!-- Stats -->
         <div class="cards">
             <div class="card">
                 <h3>Total Products</h3>
@@ -43,16 +42,19 @@
         <div class="form-section">
             <input type="text" id="product" placeholder="Product name">
             <input type="number" id="quantity" placeholder="Quantity">
-            <button id="stockInBtn">Add Stock</button>
+            <input type="text" id="description" placeholder="Product description">
+            <button id="addBtn">Add Product</button>
         </div>
 
-        <!-- Table -->
+        <!-- Product Table -->
         <div class="table-container">
             <table id="inventoryTable">
                 <thead>
                     <tr>
                         <th>Product</th>
                         <th>Quantity</th>
+                        <th>Description</th>
+                        <th>Action</th>
                     </tr>
                 </thead>
                 <tbody></tbody>
@@ -60,7 +62,6 @@
         </div>
 
     </div>
-
 </div>
 
 <script src="script.js"></script>
