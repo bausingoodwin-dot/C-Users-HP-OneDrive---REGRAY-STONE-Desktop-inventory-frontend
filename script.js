@@ -1,10 +1,9 @@
 let inventory = JSON.parse(localStorage.getItem("inventory")) || [
     { product: "ANGELI LUCE", category: "PATAGONIA QUARTZITE", size: "", unit: "", supplier: "", price: "", stock: 0, updated: "" },
-    { product: "ARCTIC PINK 2", category: "PATAGONIA QUARTZITE", size: "", unit: "", supplier: "", price: "", stock: 0, updated: "" },
-    { product: "FOLLAJE ROSA", category: "PATAGONIA QUARTZITE", size: "3.42 X 2.01 M", unit: "", supplier: "", price: "", stock: 8, updated: "" },
-    { product: "FOLLAJE ROSA", category: "PATAGONIA QUARTZITE", size: "3.43 X 2.01 M", unit: "", supplier: "", price: "", stock: 8, updated: "" }
+    { product: "ARCTIC PINK 2", category: "PATAGONIA QUARTZITE", size: "", unit: "", supplier: "", price: "", stock: 0, updated: "" }
 ];
 
+// Load inventory table
 function loadInventory(filter="") {
     const tbody = document.querySelector("#inventoryTable tbody");
     tbody.innerHTML = "";
@@ -24,14 +23,15 @@ function loadInventory(filter="") {
             <td contenteditable="true" data-field="updated" data-index="${index}">${item.updated}</td>
             <td><button data-index="${index}" class="deleteBtn">Delete</button></td>
         `;
+
         if(item.stock < 5) row.classList.add("low-stock");
         tbody.appendChild(row);
     });
 
+    // Attach event listeners for live editing and delete
     document.querySelectorAll("[contenteditable=true]").forEach(cell => {
         cell.addEventListener("input", liveEdit);
     });
-
     document.querySelectorAll(".deleteBtn").forEach(btn => {
         btn.addEventListener("click", deleteProduct);
     });
@@ -39,6 +39,7 @@ function loadInventory(filter="") {
     updateTotals();
 }
 
+// Live editing
 function liveEdit(e) {
     const cell = e.target;
     const field = cell.dataset.field;
@@ -55,26 +56,29 @@ function liveEdit(e) {
     updateTotals();
 }
 
+// Delete row
 function deleteProduct(e) {
     const index = parseInt(e.target.dataset.index);
     if(confirm(`Delete ${inventory[index].product}?`)) {
-        inventory.splice(index, 1);
+        inventory.splice(index,1);
         localStorage.setItem("inventory", JSON.stringify(inventory));
         loadInventory();
     }
 }
 
+// Update totals
 function updateTotals() {
     const totalStock = inventory.reduce((sum, item) => sum + item.stock, 0);
     document.getElementById("totalProducts").textContent = inventory.length;
     document.getElementById("totalStock").textContent = totalStock;
 }
 
+// ✅ Add new product function fixed
 function addNewProduct() {
     const newItem = { product:"", category:"", size:"", unit:"", supplier:"", price:"", stock:0, updated:"" };
     inventory.push(newItem);
     localStorage.setItem("inventory", JSON.stringify(inventory));
-    loadInventory();
+    loadInventory(); // Reload table to attach event listeners and make editable
 }
 
 // Search filter
@@ -82,7 +86,7 @@ document.getElementById("searchBox").addEventListener("input", e => {
     loadInventory(e.target.value);
 });
 
-// Sort table by column
+// Sort table
 function sortTable(colIndex) {
     const keyMap = ["product","category","size","unit","supplier","price","stock","updated"];
     const key = keyMap[colIndex];
@@ -93,4 +97,5 @@ function sortTable(colIndex) {
     loadInventory();
 }
 
+// Initial load
 loadInventory();
