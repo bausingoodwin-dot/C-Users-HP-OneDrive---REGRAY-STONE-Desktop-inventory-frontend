@@ -1,4 +1,4 @@
-let inventory = JSON.parse(localStorage.getItem("inventory")) || {};
+let inventory = JSON.parse(localStorage.getItem("inventory")) || [];
 
 function saveInventory() {
     localStorage.setItem("inventory", JSON.stringify(inventory));
@@ -8,40 +8,53 @@ function loadInventory() {
     const tableBody = document.querySelector("#inventoryTable tbody");
     tableBody.innerHTML = "";
 
-    let totalProducts = 0;
     let totalQuantity = 0;
 
-    for (let product in inventory) {
-        totalProducts++;
-        totalQuantity += inventory[product];
+    inventory.forEach((item, index) => {
+        totalQuantity += item.quantity;
 
         const row = document.createElement("tr");
-        row.innerHTML = `<td>${product}</td><td>${inventory[product]}</td>`;
+        row.innerHTML = `
+            <td>${item.product}</td>
+            <td>${item.quantity}</td>
+            <td>${item.description}</td>
+            <td><button onclick="deleteProduct(${index})">Delete</button></td>
+        `;
         tableBody.appendChild(row);
-    }
+    });
 
-    document.getElementById("totalProducts").textContent = totalProducts;
+    document.getElementById("totalProducts").textContent = inventory.length;
     document.getElementById("totalQuantity").textContent = totalQuantity;
 }
 
-document.getElementById("stockInBtn").addEventListener("click", () => {
-    const product = document.getElementById("product").value.trim();
-    const qty = parseInt(document.getElementById("quantity").value);
+function deleteProduct(index) {
+    inventory.splice(index, 1);
+    saveInventory();
+    loadInventory();
+}
 
-    if (!product || isNaN(qty) || qty <= 0) {
-        alert("Enter valid product and quantity.");
+document.getElementById("addBtn").addEventListener("click", () => {
+    const product = document.getElementById("product").value.trim();
+    const quantity = parseInt(document.getElementById("quantity").value);
+    const description = document.getElementById("description").value.trim();
+
+    if (!product || isNaN(quantity) || quantity <= 0) {
+        alert("Please enter valid product details.");
         return;
     }
 
-    if (inventory[product]) {
-        inventory[product] += qty;
-    } else {
-        inventory[product] = qty;
-    }
+    inventory.push({
+        product,
+        quantity,
+        description
+    });
 
     saveInventory();
+
     document.getElementById("product").value = "";
     document.getElementById("quantity").value = "";
+    document.getElementById("description").value = "";
+
     loadInventory();
 });
 
