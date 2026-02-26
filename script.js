@@ -1,8 +1,8 @@
+// Load inventory from localStorage or initialize
 let inventory = JSON.parse(localStorage.getItem("inventory"));
 
 if (!inventory) {
     inventory = [
-
         { product: "ANGELI LUCE", category: "PATAGONIA QUARTZITE", stock: 0 },
         { product: "ARCTIC PINK 2", category: "PATAGONIA QUARTZITE", stock: 0 },
         { product: "FOLLAJE ROSA 3.42x2.01", category: "PATAGONIA QUARTZITE", stock: 8 },
@@ -46,20 +46,20 @@ if (!inventory) {
 
         { product: "ASH GREY GRANITE", category: "COBBLESTONE", stock: 4 },
         { product: "WARM BEIGE GRANITE", category: "COBBLESTONE", stock: 5 }
-
     ];
 
     localStorage.setItem("inventory", JSON.stringify(inventory));
 }
 
+// Function to load inventory into table
 function loadInventory() {
     const tableBody = document.querySelector("#inventoryTable tbody");
     tableBody.innerHTML = "";
 
-    let totalQuantity = 0;
+    let totalStock = 0;
 
-    inventory.forEach((item) => {
-        totalQuantity += item.stock;
+    inventory.forEach(item => {
+        totalStock += item.stock;
 
         const row = document.createElement("tr");
         row.innerHTML = `
@@ -67,12 +67,12 @@ function loadInventory() {
             <td>${item.category}</td>
             <td>${item.stock}</td>
         `;
-
         tableBody.appendChild(row);
     });
 
     document.getElementById("totalProducts").textContent = inventory.length;
-    document.getElementById("totalQuantity").textContent = totalQuantity;
+    document.getElementById("totalQuantity").textContent = totalStock;
 }
 
+// Load table when page opens
 loadInventory();
