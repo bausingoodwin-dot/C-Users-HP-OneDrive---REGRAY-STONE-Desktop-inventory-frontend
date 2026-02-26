@@ -128,3 +128,16 @@ th {
 tr:not(:last-child) {
     border-bottom: 1px solid #eee;
 }
+table button {
+    padding: 6px 10px;
+    border: none;
+    background: #dc2626;
+    color: white;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+table button:hover {
+    background: #b91c1c;
+}
+
