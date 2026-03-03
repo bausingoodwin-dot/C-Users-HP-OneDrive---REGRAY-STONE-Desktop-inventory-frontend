@@ -5,10 +5,11 @@
 <title>Inventory Dashboard</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="stylesheet" href="style.css">
+
 <style>
 /* Reset & base */
-body, html { margin:0; padding:0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background:#f0f2f5; }
-button { cursor:pointer; transition: 0.2s; }
+body, html { margin:0; padding:0; font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background:#f0f2f5; }
+button { cursor:pointer; transition:0.2s; }
 button:hover { opacity:0.8; }
 
 /* Dashboard layout */
@@ -27,33 +28,44 @@ button:hover { opacity:0.8; }
 .card:hover { box-shadow:0 6px 16px rgba(0,0,0,0.15); }
 .card h3 { margin-bottom:10px; color:#34495e; }
 
-/* Table & Controls */
+/* Controls */
+input#searchBox { padding:8px 12px; width:220px; border-radius:8px; border:1px solid #ccc; outline:none; transition:0.2s; }
+input#searchBox:focus { border-color:#34495e; }
+
+/* Table */
 .table-container { background:white; padding:15px; border-radius:12px; overflow-x:auto; box-shadow:0 4px 12px rgba(0,0,0,0.05); }
-table { width:100%; border-collapse:collapse; min-width:900px; }
+table { width:100%; border-collapse:collapse; min-width:1000px; }
 th, td { padding:12px 10px; border-bottom:1px solid #eee; text-align:center; font-size:0.95em; }
 th { background:#34495e; color:white; position:sticky; top:0; z-index:1; cursor:pointer; }
 tr:nth-child(even) { background:#f9f9f9; }
-td[contenteditable="true"] { background:#fcf8e8; cursor:text; transition:0.1s; }
-td[contenteditable="true"]:focus { outline:none; background:#fff3cd; box-shadow:inset 0 0 2px rgba(0,0,0,0.2); }
+td img { width:60px; height:60px; object-fit:cover; border-radius:8px; }
+
+/* Editable */
+td[contenteditable="true"] { background:#fcf8e8; cursor:text; }
+td[contenteditable="true"]:focus { outline:none; background:#fff3cd; }
+
+/* Low stock */
 .low-stock { background:#f8d7da !important; }
-input#searchBox { padding:8px 12px; width:220px; border-radius:8px; border:1px solid #ccc; margin-bottom:10px; outline:none; transition:0.2s; }
-input#searchBox:focus { border-color:#34495e; }
 
 /* Buttons */
 button { background:#e74c3c; color:white; border:none; padding:6px 12px; border-radius:6px; font-weight:600; }
 button:hover { background:#c0392b; }
+
+/* Responsive */
 @media(max-width:768px) {
-    .dashboard { flex-direction:column; }
-    .sidebar { width:100%; flex-direction:row; overflow-x:auto; padding:10px; }
-    .sidebar ul { display:flex; gap:10px; }
-    .cards { flex-direction:column; }
+.dashboard { flex-direction:column; }
+.sidebar { width:100%; flex-direction:row; overflow-x:auto; padding:10px; }
+.sidebar ul { display:flex; gap:10px; }
+.cards { flex-direction:column; }
 }
 </style>
 </head>
+
 <body>
 
 <div class="dashboard">
 
+<!-- Sidebar -->
 <div class="sidebar">
 <h2>Inventory</h2>
 <ul>
@@ -64,12 +76,14 @@ button:hover { background:#c0392b; }
 </ul>
 </div>
 
+<!-- Main -->
 <div class="main">
 
 <div class="header">
 <h1>Inventory Dashboard</h1>
 </div>
 
+<!-- Cards -->
 <div class="cards">
 <div class="card">
 <h3>Total Products</h3>
@@ -81,15 +95,19 @@ button:hover { background:#c0392b; }
 </div>
 </div>
 
+<!-- Controls -->
 <div style="display:flex; flex-wrap:wrap; gap:10px; align-items:center; margin-bottom:10px;">
 <input type="text" id="searchBox" placeholder="Search products...">
+<input type="file" id="imageInput" accept="image/*">
 <button onclick="addNewProduct()">+ Add Product</button>
 </div>
 
+<!-- Table -->
 <div class="table-container">
 <table id="inventoryTable">
 <thead>
 <tr>
+<th>Image</th>
 <th onclick="sortTable(0)">Product Name</th>
 <th onclick="sortTable(1)">Category</th>
 <th onclick="sortTable(2)">Size / Specification</th>
