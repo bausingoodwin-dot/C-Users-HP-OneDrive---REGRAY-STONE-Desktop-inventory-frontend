@@ -1,12 +1,17 @@
 let inventory = JSON.parse(localStorage.getItem("inventory")) || [];
 
-/* LOAD TABLE */
+
+/* =========================
+   LOAD INVENTORY TABLE
+========================= */
 function loadInventory(filter = "") {
+
     const tbody = document.querySelector("#inventoryTable tbody");
     tbody.innerHTML = "";
 
     inventory.forEach((item, index) => {
 
+        // SEARCH FILTER
         if (filter && !Object.values(item).some(v =>
             v.toString().toLowerCase().includes(filter.toLowerCase())
         )) return;
@@ -15,8 +20,11 @@ function loadInventory(filter = "") {
 
         row.innerHTML = `
             <td>
-                ${item.image ? `<img src="${item.image}">` : "No Image"}
+                ${item.image 
+                    ? `<img src="${item.image}" style="width:60px;height:60px;object-fit:cover;border-radius:8px;">`
+                    : "No Image"}
             </td>
+
             <td contenteditable="true" data-field="product" data-index="${index}">${item.product}</td>
             <td contenteditable="true" data-field="category" data-index="${index}">${item.category}</td>
             <td contenteditable="true" data-field="size" data-index="${index}">${item.size}</td>
@@ -25,6 +33,7 @@ function loadInventory(filter = "") {
             <td contenteditable="true" data-field="price" data-index="${index}">${item.price}</td>
             <td contenteditable="true" data-field="stock" data-index="${index}">${item.stock}</td>
             <td contenteditable="true" data-field="updated" data-index="${index}">${item.updated}</td>
+
             <td>
                 <button onclick="deleteProduct(${index})">Delete</button>
             </td>
@@ -41,10 +50,16 @@ function loadInventory(filter = "") {
     updateTotals();
 }
 
-/* EDIT CELLS */
+
+/* =========================
+   EDIT CELLS
+========================= */
 function attachEditListeners() {
+
     document.querySelectorAll("[contenteditable=true]").forEach(cell => {
+
         cell.addEventListener("input", function () {
+
             const index = this.dataset.index;
             const field = this.dataset.field;
             let value = this.innerText;
@@ -59,10 +74,14 @@ function attachEditListeners() {
     });
 }
 
-/* ADD PRODUCT */
+
+/* =========================
+   ADD PRODUCT (FIXED IMAGE)
+========================= */
 function addNewProduct() {
 
-    const imageFile = document.getElementById("imageInput").files[0];
+    const fileInput = document.getElementById("imageInput");
+    const imageFile = fileInput.files[0];
 
     const newItem = {
         image: "",
@@ -76,40 +95,63 @@ function addNewProduct() {
         updated: new Date().toLocaleDateString()
     };
 
+    // ✅ FIX: Wait for image to fully load before pushing
     if (imageFile) {
+
         const reader = new FileReader();
+
         reader.onload = function (e) {
+
             newItem.image = e.target.result;
+
             inventory.push(newItem);
-            saveAndReload();
+
+            localStorage.setItem("inventory", JSON.stringify(inventory));
+
+            loadInventory();   // reload AFTER image is ready
         };
+
         reader.readAsDataURL(imageFile);
+
     } else {
+
         inventory.push(newItem);
-        saveAndReload();
+        localStorage.setItem("inventory", JSON.stringify(inventory));
+        loadInventory();
     }
 
-    document.getElementById("imageInput").value = "";
+    fileInput.value = "";
 }
 
-/* DELETE */
+
+/* =========================
+   DELETE PRODUCT
+========================= */
 function deleteProduct(index) {
+
     if (confirm("Delete this product?")) {
         inventory.splice(index, 1);
-        saveAndReload();
+        localStorage.setItem("inventory", JSON.stringify(inventory));
+        loadInventory();
     }
 }
 
-/* SEARCH */
+
+/* =========================
+   SEARCH
+========================= */
 document.getElementById("searchBox").addEventListener("input", function () {
     loadInventory(this.value);
 });
 
-/* SORT */
+
+/* =========================
+   SORT
+========================= */
 function sortTable(colIndex) {
 
     const keys = [
-        null, // image column skip
+        null, // image column
         "product",
         "category",
         "size",
@@ -121,21 +163,27 @@ function sortTable(colIndex) {
     ];
 
     const key = keys[colIndex];
-
     if (!key) return;
 
     inventory.sort((a, b) => {
+
         if (key === "stock") {
             return parseInt(a[key]) - parseInt(b[key]);
         }
+
         return a[key].toString().localeCompare(b[key].toString());
     });
 
-    saveAndReload(false);
+    localStorage.setItem("inventory", JSON.stringify(inventory));
+    loadInventory();
 }
 
-/* TOTALS */
+
+/* =========================
+   TOTALS
+========================= */
 function updateTotals() {
+
     document.getElementById("totalProducts").textContent = inventory.length;
 
     const totalStock = inventory.reduce((sum, item) =>
@@ -145,11 +193,8 @@ function updateTotals() {
     document.getElementById("totalStock").textContent = totalStock;
 }
 
-/* SAVE */
-function saveAndReload(reload = true) {
-    localStorage.setItem("inventory", JSON.stringify(inventory));
-    if (reload) loadInventory();
-}
 
-/* INITIAL LOAD */
+/* =========================
+   INITIAL LOAD
+========================= */
 loadInventory();
