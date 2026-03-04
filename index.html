@@ -1,61 +1,69 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Inventory System</title>
+    <title>Regray Inventory System</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<h2>Inventory Management</h2>
+<div class="container">
 
-<!-- ADD PRODUCT SECTION -->
-<div class="form-section">
-    <input type="text" id="name" placeholder="Product Name">
-    <input type="text" id="size" placeholder="Size">
-    <input type="text" id="supplier" placeholder="Supplier">
-    <input type="number" id="price" placeholder="Price">
-    <input type="number" id="stock" placeholder="Stock">
+    <h1>Regray Inventory System</h1>
 
-    <select id="category">
-        <option value="PATAGONIA QUARTZITE">PATAGONIA QUARTZITE</option>
-        <option value="QUARTZITE">QUARTZITE</option>
-        <option value="ONYX">ONYX</option>
-        <option value="MARBLE">MARBLE</option>
-        <option value="GRANITE">GRANITE</option>
-        <option value="TRAVERTINE">TRAVERTINE</option>
-        <option value="LIMESTONE">LIMESTONE</option>
-        <option value="CRAZY CUTS">CRAZY CUTS</option>
-        <option value="COBBLESTONE">COBBLESTONE</option>
-    </select>
+    <!-- SUMMARY -->
+    <div class="summary">
+        <div class="card">
+            <h3>Total Products</h3>
+            <p id="totalProducts">0</p>
+        </div>
+        <div class="card">
+            <h3>Total Stocks</h3>
+            <p id="totalStocks">0</p>
+        </div>
+    </div>
 
-    <select id="unit">
-        <option value="SLABS">SLABS</option>
-        <option value="PIECE">PIECE</option>
-    </select>
+    <!-- ADD PRODUCT -->
+    <div class="form-section">
+        <h2>Add New Product</h2>
+        <input type="text" id="newProductName" placeholder="Product Name">
+        <input type="text" id="newProductCategory" placeholder="Category">
+        <button onclick="addProduct()">Add Product</button>
+    </div>
 
-    <button onclick="addProduct()">Add Product</button>
+    <!-- STOCK SECTION -->
+    <div class="form-section">
+        <h2>Stock Management</h2>
+
+        <select id="product"></select>
+        <input type="text" id="category" placeholder="Category" readonly>
+        <input type="number" id="quantity" placeholder="Quantity">
+
+        <div class="buttons">
+            <button onclick="stockIn()">Stock In</button>
+            <button onclick="stockOut()" class="danger">Stock Out</button>
+            <button onclick="exportCSV()" class="export">Export CSV</button>
+        </div>
+    </div>
+
+    <!-- SEARCH -->
+    <div class="search-box">
+        <input type="text" id="search" placeholder="Search product..." onkeyup="renderTable()">
+    </div>
+
+    <!-- TABLE -->
+    <table>
+        <thead>
+            <tr>
+                <th>Product</th>
+                <th>Category</th>
+                <th>Quantity</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody id="inventoryTable"></tbody>
+    </table>
+
 </div>
-
-<hr>
-
-<!-- TABLE -->
-<table>
-    <thead>
-        <tr>
-            <th>Image</th>
-            <th>Name</th>
-            <th>Category</th>
-            <th>Size</th>
-            <th>Unit</th>
-            <th>Supplier</th>
-            <th>Price</th>
-            <th>Stock</th>
-            <th>Last Updated</th>
-            <th>Action</th>
-        </tr>
-    </thead>
-    <tbody id="tableBody"></tbody>
-</table>
 
 <script src="script.js"></script>
 </body>
