@@ -33,6 +33,7 @@
         <form id="addProductForm">
             <input type="text" id="newProductName" placeholder="Product Name" required>
             <input type="text" id="newProductCategory" placeholder="Category" required>
+            <input type="file" id="newProductImage" accept="image/*" required>
             <button type="submit">Add Product</button>
         </form>
     </section>
@@ -42,7 +43,9 @@
         <h2>Stock Management</h2>
         <form id="stockForm">
 
-            <select id="product" required></select>
+            <select id="product" required>
+                <option value="">Select Product</option>
+            </select>
 
             <input type="text" id="category" placeholder="Category" readonly>
 
@@ -59,11 +62,7 @@
 
     <!-- SEARCH -->
     <section class="search-box">
-        <input 
-            type="text" 
-            id="search" 
-            placeholder="Search product..." 
-            aria-label="Search products">
+        <input type="text" id="search" placeholder="Search product...">
     </section>
 
     <!-- TABLE -->
@@ -71,9 +70,11 @@
         <table>
             <thead>
                 <tr>
+                    <th>Photo</th>
                     <th>Product</th>
                     <th>Category</th>
                     <th>Quantity</th>
+                    <th>Last Updated</th>
                     <th>Action</th>
                 </tr>
             </thead>
