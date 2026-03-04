@@ -1,95 +1,61 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Inventory Management</title>
-<link rel="stylesheet" href="style.css">
+    <title>Inventory System</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<header>
-    <h1>Inventory Management</h1>
-    <nav>
-        <button id="showDashboardBtn">Dashboard</button>
-        <button id="showTransactionsBtn">Transactions Log</button>
-    </nav>
-</header>
+<h2>Inventory Management</h2>
 
-<main>
-    <!-- Dashboard -->
-    <section id="dashboardPage">
-        <div class="add-product">
-            <h2>Add Product</h2>
-            <form id="productForm">
-                <input type="text" id="productName" placeholder="Product Name" required>
-                <input type="text" id="productSize" placeholder="Size">
-                <input type="text" id="productSupplier" placeholder="Supplier">
-                <input type="number" id="productPrice" placeholder="Price">
-                <input type="number" id="productQty" placeholder="Quantity" min="1" required>
+<!-- ADD PRODUCT SECTION -->
+<div class="form-section">
+    <input type="text" id="name" placeholder="Product Name">
+    <input type="text" id="size" placeholder="Size">
+    <input type="text" id="supplier" placeholder="Supplier">
+    <input type="number" id="price" placeholder="Price">
+    <input type="number" id="stock" placeholder="Stock">
 
-                <!-- Hidden file input -->
-                <input type="file" id="productImage" accept="image/*" style="display:none;">
+    <select id="category">
+        <option value="PATAGONIA QUARTZITE">PATAGONIA QUARTZITE</option>
+        <option value="QUARTZITE">QUARTZITE</option>
+        <option value="ONYX">ONYX</option>
+        <option value="MARBLE">MARBLE</option>
+        <option value="GRANITE">GRANITE</option>
+        <option value="TRAVERTINE">TRAVERTINE</option>
+        <option value="LIMESTONE">LIMESTONE</option>
+        <option value="CRAZY CUTS">CRAZY CUTS</option>
+        <option value="COBBLESTONE">COBBLESTONE</option>
+    </select>
 
-                <!-- Minimalist image preview -->
-                <div id="imagePreviewContainer">
-                    <img id="imagePreview" src="" alt="Click to upload" title="Click to select image">
-                </div>
+    <select id="unit">
+        <option value="SLABS">SLABS</option>
+        <option value="PIECE">PIECE</option>
+    </select>
 
-                <button type="submit">Add Product</button>
-            </form>
-        </div>
-
-        <div class="summary">
-            <p>Total Products: <span id="totalProducts">0</span></p>
-            <p>Total Stock: <span id="totalStock">0</span></p>
-        </div>
-
-        <div class="table-container">
-            <table id="inventoryTable">
-                <thead>
-                    <tr>
-                        <th>Image</th>
-                        <th>Name</th>
-                        <th>Category</th>
-                        <th>Size</th>
-                        <th>Unit</th>
-                        <th>Supplier</th>
-                        <th>Price</th>
-                        <th>Stock</th>
-                        <th>Last Updated</th>
-                        <th>Action</th>
-                    </tr>
-                </thead>
-                <tbody></tbody>
-            </table>
-        </div>
-    </section>
-
-    <!-- Transactions -->
-    <section id="transactionPage" style="display:none;">
-        <h2>Transaction Log</h2>
-        <div class="table-container">
-            <table id="logTable">
-                <thead>
-                    <tr>
-                        <th>Product</th>
-                        <th>Old Stock</th>
-                        <th>New Stock</th>
-                        <th>Date</th>
-                    </tr>
-                </thead>
-                <tbody></tbody>
-            </table>
-        </div>
-    </section>
-</main>
-
-<!-- Image Modal -->
-<div id="imageModal" class="modal">
-    <span class="close">&times;</span>
-    <img class="modal-content" id="modalImage">
+    <button onclick="addProduct()">Add Product</button>
 </div>
+
+<hr>
+
+<!-- TABLE -->
+<table>
+    <thead>
+        <tr>
+            <th>Image</th>
+            <th>Name</th>
+            <th>Category</th>
+            <th>Size</th>
+            <th>Unit</th>
+            <th>Supplier</th>
+            <th>Price</th>
+            <th>Stock</th>
+            <th>Last Updated</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody id="tableBody"></tbody>
+</table>
 
 <script src="script.js"></script>
 </body>
