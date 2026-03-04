@@ -15,11 +15,11 @@
     <div class="sidebar">
         <h2>Inventory</h2>
         <ul>
-            <li id="dashboardLink">Dashboard</li>
-            <li id="productsLink">Products</li>
-            <li id="suppliersLink">Suppliers</li>
-            <li id="settingsLink">Settings</li>
-            <li id="logLink">Transaction Log</li> <!-- NEW -->
+            <li><a href="#" id="dashboardLink">Dashboard</a></li>
+            <li><a href="#" id="productsLink">Products</a></li>
+            <li><a href="#" id="suppliersLink">Suppliers</a></li>
+            <li><a href="#" id="settingsLink">Settings</a></li>
+            <li><a href="#" id="logLink">Transaction Log</a></li>
         </ul>
     </div>
 
@@ -46,8 +46,6 @@
             <input type="text" id="searchBox" placeholder="Search products...">
             <input type="file" id="imageInput" accept="image/*">
             <button id="addBtn">+ Add Product</button>
-            <button id="undoBtn">Undo Last Stock</button>
-            <button id="exportLogBtn">Export Log</button>
         </div>
 
         <!-- INVENTORY TABLE -->
@@ -64,6 +62,7 @@
                         <th onclick="sortTable(6)">Unit Price</th>
                         <th onclick="sortTable(7)">Current Stock</th>
                         <th onclick="sortTable(8)">Updated</th>
+                        <th>Undo</th>
                         <th>Action</th>
                     </tr>
                 </thead>
@@ -91,8 +90,6 @@
                 <tbody></tbody>
             </table>
         </div>
-
-        <button id="backBtn">← Back to Dashboard</button>
     </div>
 </div>
 
