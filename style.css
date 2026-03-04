@@ -115,3 +115,26 @@ table img {
     padding: 5px 10px;
     border-radius: 5px;
 }
+.table-section {
+    max-height: 400px; /* Adjust height as needed */
+    overflow-y: auto;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+}
+
+.table-section table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.table-section thead th {
+    position: sticky;
+    top: 0;
+    background: #f4f6fa;
+    z-index: 1;
+}
+
+.table-section tbody tr:nth-child(even) {
+    background: #f9f9f9;
+}
+
