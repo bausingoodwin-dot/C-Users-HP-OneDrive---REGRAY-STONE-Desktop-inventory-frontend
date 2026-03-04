@@ -1,198 +1,136 @@
-// ========================================
-// REGRAY INVENTORY SYSTEM - PROFESSIONAL VERSION
-// ========================================
+let products = JSON.parse(localStorage.getItem("inventory")) || [];
 
-// Load inventory & logs
-let inventory = JSON.parse(localStorage.getItem("inventory")) || {};
-let transactions = JSON.parse(localStorage.getItem("transactions")) || [];
+const addProductForm = document.getElementById("addProductForm");
+const productSelect = document.getElementById("product");
+const categoryInput = document.getElementById("category");
+const inventoryTable = document.getElementById("inventoryTable");
+const totalProducts = document.getElementById("totalProducts");
+const totalStocks = document.getElementById("totalStocks");
+const searchInput = document.getElementById("search");
 
-// ================= SAVE SYSTEM =================
 function saveData() {
-    localStorage.setItem("inventory", JSON.stringify(inventory));
-    localStorage.setItem("transactions", JSON.stringify(transactions));
+    localStorage.setItem("inventory", JSON.stringify(products));
 }
 
-// ================= DROPDOWN UPDATE =================
-function updateProductDropdown() {
-    const select = document.getElementById("product");
-    select.innerHTML = "";
+function updateSummary() {
+    totalProducts.textContent = products.length;
+    totalStocks.textContent = products.reduce((sum, p) => sum + p.quantity, 0);
+}
 
-    for (let product in inventory) {
+function renderProducts(filter = "") {
+    inventoryTable.innerHTML = "";
+    productSelect.innerHTML = "<option value=''>Select Product</option>";
+
+    products.forEach((product, index) => {
+
+        if (!product.name.toLowerCase().includes(filter.toLowerCase())) return;
+
         const option = document.createElement("option");
-        option.value = product;
-        option.textContent = product;
-        select.appendChild(option);
-    }
+        option.value = index;
+        option.textContent = product.name;
+        productSelect.appendChild(option);
 
-    updateCategoryField();
-}
-
-// ================= CATEGORY AUTO FILL =================
-function updateCategoryField() {
-    const selected = document.getElementById("product").value;
-    const categoryInput = document.getElementById("category");
-
-    if (inventory[selected]) {
-        categoryInput.value = inventory[selected].category;
-    } else {
-        categoryInput.value = "";
-    }
-}
-
-// ================= TABLE UPDATE =================
-function updateTable() {
-    const tableBody = document.getElementById("inventoryTable");
-    tableBody.innerHTML = "";
-
-    const searchValue = document.getElementById("search").value.toLowerCase();
-
-    for (let product in inventory) {
-
-        if (!product.toLowerCase().includes(searchValue)) continue;
-
-        const row = document.createElement("tr");
-
-        if (inventory[product].quantity < 5) {
-            row.classList.add("low-stock");
-        }
-
-        row.innerHTML = `
-            <td>${product}</td>
-            <td>${inventory[product].category}</td>
-            <td>${inventory[product].quantity}</td>
-            <td>
-                <button onclick="deleteProduct('${product}')">Delete</button>
-            </td>
+        inventoryTable.innerHTML += `
+            <tr>
+                <td><img src="${product.image}"></td>
+                <td>${product.name}</td>
+                <td>${product.category}</td>
+                <td>${product.quantity}</td>
+                <td>${product.lastUpdated || "-"}</td>
+                <td>
+                    <button class="delete-btn" onclick="deleteProduct(${index})">Delete</button>
+                </td>
+            </tr>
         `;
-
-        tableBody.appendChild(row);
-    }
+    });
 
     updateSummary();
 }
 
-// ================= SUMMARY =================
-function updateSummary() {
-    let totalProducts = Object.keys(inventory).length;
-    let totalStocks = 0;
-
-    for (let product in inventory) {
-        totalStocks += inventory[product].quantity;
-    }
-
-    document.getElementById("totalProducts").textContent = totalProducts;
-    document.getElementById("totalStocks").textContent = totalStocks;
-    document.getElementById("totalItems").textContent = totalStocks;
+function deleteProduct(index) {
+    products.splice(index, 1);
+    saveData();
+    renderProducts();
 }
 
-// ================= ADD NEW PRODUCT =================
-function addNewProduct() {
-    const name = document.getElementById("newProductName").value.trim();
-    const category = document.getElementById("newProductCategory").value.trim();
+addProductForm.addEventListener("submit", function(e) {
+    e.preventDefault();
 
-    if (!name || !category) {
-        alert("Please fill all fields.");
-        return;
-    }
+    const name = document.getElementById("newProductName").value;
+    const category = document.getElementById("newProductCategory").value;
+    const imageFile = document.getElementById("newProductImage").files[0];
 
-    if (inventory[name]) {
-        alert("Product already exists.");
-        return;
-    }
+    const reader = new FileReader();
+    reader.onload = function() {
+        products.push({
+            name,
+            category,
+            quantity: 0,
+            image: reader.result,
+            lastUpdated: "-"
+        });
 
-    inventory[name] = {
-        category: category,
-        quantity: 0
+        saveData();
+        renderProducts();
+        addProductForm.reset();
     };
 
-    saveData();
-    updateProductDropdown();
-    updateTable();
+    reader.readAsDataURL(imageFile);
+});
 
-    document.getElementById("newProductName").value = "";
-    document.getElementById("newProductCategory").value = "";
-}
+productSelect.addEventListener("change", function() {
+    const index = this.value;
+    categoryInput.value = index !== "" ? products[index].category : "";
+});
 
-// ================= STOCK IN =================
-function stockIn() {
-    const product = document.getElementById("product").value;
+document.getElementById("stockInBtn").addEventListener("click", function() {
+    const index = productSelect.value;
     const qty = parseInt(document.getElementById("quantity").value);
 
-    if (!product || isNaN(qty) || qty <= 0) {
-        alert("Enter valid quantity.");
-        return;
-    }
+    if (index === "" || !qty) return;
 
-    inventory[product].quantity += qty;
-
-    transactions.push({
-        product,
-        type: "Stock In",
-        quantity: qty,
-        date: new Date().toLocaleString()
-    });
+    products[index].quantity += qty;
+    products[index].lastUpdated = new Date().toLocaleString();
 
     saveData();
-    updateTable();
-    document.getElementById("quantity").value = "";
-}
+    renderProducts();
+});
 
-// ================= STOCK OUT =================
-function stockOut() {
-    const product = document.getElementById("product").value;
+document.getElementById("stockOutBtn").addEventListener("click", function() {
+    const index = productSelect.value;
     const qty = parseInt(document.getElementById("quantity").value);
 
-    if (!product || isNaN(qty) || qty <= 0) {
-        alert("Enter valid quantity.");
-        return;
+    if (index === "" || !qty) return;
+
+    if (products[index].quantity >= qty) {
+        products[index].quantity -= qty;
+        products[index].lastUpdated = new Date().toLocaleString();
+    } else {
+        alert("Not enough stock!");
     }
-
-    if (inventory[product].quantity < qty) {
-        alert("Not enough stock.");
-        return;
-    }
-
-    inventory[product].quantity -= qty;
-
-    transactions.push({
-        product,
-        type: "Stock Out",
-        quantity: qty,
-        date: new Date().toLocaleString()
-    });
 
     saveData();
-    updateTable();
-    document.getElementById("quantity").value = "";
-}
+    renderProducts();
+});
 
-// ================= DELETE PRODUCT =================
-function deleteProduct(product) {
-    if (confirm("Delete this product?")) {
-        delete inventory[product];
-        saveData();
-        updateProductDropdown();
-        updateTable();
-    }
-}
+document.getElementById("exportBtn").addEventListener("click", function() {
+    let csv = "Product,Category,Quantity,Last Updated\n";
 
-// ================= EXPORT CSV =================
-function exportCSV() {
-    let csv = "Product,Category,Quantity\n";
-
-    for (let product in inventory) {
-        csv += `${product},${inventory[product].category},${inventory[product].quantity}\n`;
-    }
+    products.forEach(p => {
+        csv += `${p.name},${p.category},${p.quantity},${p.lastUpdated}\n`;
+    });
 
     const blob = new Blob([csv], { type: "text/csv" });
-    const link = document.createElement("a");
-    link.href = URL.createObjectURL(blob);
-    link.download = "inventory.csv";
-    link.click();
-}
+    const url = URL.createObjectURL(blob);
 
-// ================= INITIAL LOAD =================
-document.getElementById("product").addEventListener("change", updateCategoryField);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "inventory.csv";
+    a.click();
+});
 
-updateProductDropdown();
-updateTable();
+searchInput.addEventListener("input", function() {
+    renderProducts(this.value);
+});
+
+renderProducts();
