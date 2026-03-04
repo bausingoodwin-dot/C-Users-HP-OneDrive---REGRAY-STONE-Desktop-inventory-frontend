@@ -24,6 +24,7 @@ const categoryOptions = [
     "CRAZY CUTS",
     "COBBLESTONE"
 ];
+const unitOptions = ["SLABS", "PIECE"];
 
 /* LOAD DATA */
 window.addEventListener("load", () => {
@@ -191,3 +192,4 @@ function saveProductsToLocal(){
     localStorage.setItem("products",JSON.stringify(products));
 }
 function saveLogToLocal(){ localStorage.setItem("stockLog",JSON.stringify(stockLog)); }
+
