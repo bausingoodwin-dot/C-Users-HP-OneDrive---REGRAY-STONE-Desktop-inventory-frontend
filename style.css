@@ -18,6 +18,8 @@ tr:nth-child(even){background:#f9f9f9;}
 td[contenteditable="true"]{background:#fcf8e8;}
 .low-stock{background:#f8d7da !important;}
 
+select {padding:6px; border-radius:4px;}
+
 .thumb{width:60px;height:60px;object-fit:cover;border-radius:8px;cursor:pointer;transition:0.3s;}
 .thumb:hover{transform:scale(1.1);}
 
