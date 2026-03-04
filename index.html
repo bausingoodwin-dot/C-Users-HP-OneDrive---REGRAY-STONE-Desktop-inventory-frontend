@@ -15,16 +15,16 @@
     <div class="sidebar">
         <h2>Inventory</h2>
         <ul>
-            <li>Dashboard</li>
-            <li>Products</li>
-            <li>Suppliers</li>
-            <li>Settings</li>
+            <li id="dashboardLink">Dashboard</li>
+            <li id="productsLink">Products</li>
+            <li id="suppliersLink">Suppliers</li>
+            <li id="settingsLink">Settings</li>
+            <li id="logLink">Transaction Log</li> <!-- NEW -->
         </ul>
     </div>
 
-    <!-- MAIN -->
-    <div class="main">
-
+    <!-- MAIN PAGE -->
+    <div class="main" id="mainPage">
         <div class="header">
             <h1>Inventory Dashboard</h1>
         </div>
@@ -70,10 +70,15 @@
                 <tbody></tbody>
             </table>
         </div>
+    </div>
 
-        <!-- TRANSACTION LOG -->
-        <div class="table-container" style="margin-top:20px;">
-            <h3>Transaction Log</h3>
+    <!-- TRANSACTION LOG PAGE -->
+    <div class="main" id="transactionPage" style="display:none;">
+        <div class="header">
+            <h1>Transaction Log</h1>
+        </div>
+
+        <div class="table-container">
             <table id="transactionLogTable">
                 <thead>
                     <tr>
@@ -87,6 +92,7 @@
             </table>
         </div>
 
+        <button id="backBtn">← Back to Dashboard</button>
     </div>
 </div>
 
