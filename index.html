@@ -16,14 +16,11 @@
         <h2>Inventory</h2>
         <ul>
             <li><a href="#" id="dashboardLink">Dashboard</a></li>
-            <li><a href="#" id="productsLink">Products</a></li>
-            <li><a href="#" id="suppliersLink">Suppliers</a></li>
-            <li><a href="#" id="settingsLink">Settings</a></li>
             <li><a href="#" id="logLink">Transaction Log</a></li>
         </ul>
     </div>
 
-    <!-- MAIN PAGE -->
+    <!-- MAIN DASHBOARD -->
     <div class="main" id="mainPage">
         <div class="header">
             <h1>Inventory Dashboard</h1>
@@ -54,14 +51,14 @@
                 <thead>
                     <tr>
                         <th>Image</th>
-                        <th onclick="sortTable(1)">Product Name</th>
-                        <th onclick="sortTable(2)">Category</th>
-                        <th onclick="sortTable(3)">Size</th>
-                        <th onclick="sortTable(4)">Unit</th>
-                        <th onclick="sortTable(5)">Supplier</th>
-                        <th onclick="sortTable(6)">Unit Price</th>
-                        <th onclick="sortTable(7)">Current Stock</th>
-                        <th onclick="sortTable(8)">Updated</th>
+                        <th>Product Name</th>
+                        <th>Category</th>
+                        <th>Size</th>
+                        <th>Unit</th>
+                        <th>Supplier</th>
+                        <th>Unit Price</th>
+                        <th>Current Stock</th>
+                        <th>Updated</th>
                         <th>Undo</th>
                         <th>Action</th>
                     </tr>
@@ -71,12 +68,11 @@
         </div>
     </div>
 
-    <!-- TRANSACTION LOG PAGE -->
+    <!-- TRANSACTION LOG -->
     <div class="main" id="transactionPage" style="display:none;">
         <div class="header">
             <h1>Transaction Log</h1>
         </div>
-
         <div class="table-container">
             <table id="transactionLogTable">
                 <thead>
@@ -91,6 +87,7 @@
             </table>
         </div>
     </div>
+
 </div>
 
 <!-- IMAGE PREVIEW MODAL -->
