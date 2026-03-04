@@ -1,114 +1,198 @@
-let products = JSON.parse(localStorage.getItem("products")) || [];
-const tableBody = document.getElementById("tableBody");
+// ========================================
+// REGRAY INVENTORY SYSTEM - PROFESSIONAL VERSION
+// ========================================
 
-function saveProducts(){
-    localStorage.setItem("products", JSON.stringify(products));
+// Load inventory & logs
+let inventory = JSON.parse(localStorage.getItem("inventory")) || {};
+let transactions = JSON.parse(localStorage.getItem("transactions")) || [];
+
+// ================= SAVE SYSTEM =================
+function saveData() {
+    localStorage.setItem("inventory", JSON.stringify(inventory));
+    localStorage.setItem("transactions", JSON.stringify(transactions));
 }
 
-function addProduct(){
-    const product = {
-        name: document.getElementById("name").value,
-        category: document.getElementById("category").value,
-        size: document.getElementById("size").value,
-        unit: document.getElementById("unit").value,
-        supplier: document.getElementById("supplier").value,
-        price: document.getElementById("price").value,
-        stock: document.getElementById("stock").value,
-        image: "",
-        lastUpdated: new Date().toLocaleDateString()
-    };
+// ================= DROPDOWN UPDATE =================
+function updateProductDropdown() {
+    const select = document.getElementById("product");
+    select.innerHTML = "";
 
-    products.push(product);
-    saveProducts();
-    renderTable();
+    for (let product in inventory) {
+        const option = document.createElement("option");
+        option.value = product;
+        option.textContent = product;
+        select.appendChild(option);
+    }
+
+    updateCategoryField();
 }
 
-function renderTable(){
-    tableBody.innerHTML = "";
-    products.forEach((product, index)=>{
-        renderRow(product,index);
-    });
-}
+// ================= CATEGORY AUTO FILL =================
+function updateCategoryField() {
+    const selected = document.getElementById("product").value;
+    const categoryInput = document.getElementById("category");
 
-function renderRow(product,index){
-
-    const categories = ["PATAGONIA QUARTZITE","QUARTZITE","ONYX","MARBLE","GRANITE","TRAVERTINE","LIMESTONE","CRAZY CUTS","COBBLESTONE"];
-    const units = ["SLABS","PIECE"];
-
-    let categoryDropdown = `<select onchange="updateField(${index},'category',this.value)">`;
-    categories.forEach(c=>{
-        categoryDropdown += `<option value="${c}" ${c===product.category?'selected':''}>${c}</option>`;
-    });
-    categoryDropdown += "</select>";
-
-    let unitDropdown = `<select onchange="updateField(${index},'unit',this.value)">`;
-    units.forEach(u=>{
-        unitDropdown += `<option value="${u}" ${u===product.unit?'selected':''}>${u}</option>`;
-    });
-    unitDropdown += "</select>";
-
-    const row = tableBody.insertRow();
-
-    row.innerHTML = `
-        <td>
-            <div class="image-wrapper">
-                <img src="${product.image || ''}" class="thumb">
-                <div class="image-overlay">Change Photo</div>
-                <input type="file" class="image-input" accept="image/*">
-            </div>
-        </td>
-        <td contenteditable="true" onblur="updateField(${index},'name',this.innerText)">${product.name}</td>
-        <td>${categoryDropdown}</td>
-        <td contenteditable="true" onblur="updateField(${index},'size',this.innerText)">${product.size}</td>
-        <td>${unitDropdown}</td>
-        <td contenteditable="true" onblur="updateField(${index},'supplier',this.innerText)">${product.supplier}</td>
-        <td contenteditable="true" onblur="updateField(${index},'price',this.innerText)">${product.price}</td>
-        <td contenteditable="true" onblur="updateStock(${index},this.innerText)">${product.stock}</td>
-        <td>${product.lastUpdated}</td>
-        <td><button onclick="deleteProduct(${index})">Delete</button></td>
-    `;
-
-    const wrapper = row.querySelector(".image-wrapper");
-    const img = row.querySelector(".thumb");
-    const fileInput = row.querySelector(".image-input");
-
-    wrapper.addEventListener("click", ()=> fileInput.click());
-
-    fileInput.addEventListener("change", function(){
-        const file = this.files[0];
-        if(!file) return;
-
-        const reader = new FileReader();
-        reader.onload = function(e){
-            img.src = e.target.result;
-            products[index].image = e.target.result;
-            saveProducts();
-        };
-        reader.readAsDataURL(file);
-    });
-
-    if(product.stock < 5){
-        row.classList.add("low-stock");
+    if (inventory[selected]) {
+        categoryInput.value = inventory[selected].category;
+    } else {
+        categoryInput.value = "";
     }
 }
 
-function updateField(index,field,value){
-    products[index][field] = value;
-    products[index].lastUpdated = new Date().toLocaleDateString();
-    saveProducts();
+// ================= TABLE UPDATE =================
+function updateTable() {
+    const tableBody = document.getElementById("inventoryTable");
+    tableBody.innerHTML = "";
+
+    const searchValue = document.getElementById("search").value.toLowerCase();
+
+    for (let product in inventory) {
+
+        if (!product.toLowerCase().includes(searchValue)) continue;
+
+        const row = document.createElement("tr");
+
+        if (inventory[product].quantity < 5) {
+            row.classList.add("low-stock");
+        }
+
+        row.innerHTML = `
+            <td>${product}</td>
+            <td>${inventory[product].category}</td>
+            <td>${inventory[product].quantity}</td>
+            <td>
+                <button onclick="deleteProduct('${product}')">Delete</button>
+            </td>
+        `;
+
+        tableBody.appendChild(row);
+    }
+
+    updateSummary();
 }
 
-function updateStock(index,value){
-    products[index].stock = value;
-    products[index].lastUpdated = new Date().toLocaleDateString();
-    saveProducts();
-    renderTable();
+// ================= SUMMARY =================
+function updateSummary() {
+    let totalProducts = Object.keys(inventory).length;
+    let totalStocks = 0;
+
+    for (let product in inventory) {
+        totalStocks += inventory[product].quantity;
+    }
+
+    document.getElementById("totalProducts").textContent = totalProducts;
+    document.getElementById("totalStocks").textContent = totalStocks;
+    document.getElementById("totalItems").textContent = totalStocks;
 }
 
-function deleteProduct(index){
-    products.splice(index,1);
-    saveProducts();
-    renderTable();
+// ================= ADD NEW PRODUCT =================
+function addNewProduct() {
+    const name = document.getElementById("newProductName").value.trim();
+    const category = document.getElementById("newProductCategory").value.trim();
+
+    if (!name || !category) {
+        alert("Please fill all fields.");
+        return;
+    }
+
+    if (inventory[name]) {
+        alert("Product already exists.");
+        return;
+    }
+
+    inventory[name] = {
+        category: category,
+        quantity: 0
+    };
+
+    saveData();
+    updateProductDropdown();
+    updateTable();
+
+    document.getElementById("newProductName").value = "";
+    document.getElementById("newProductCategory").value = "";
 }
 
-renderTable();
+// ================= STOCK IN =================
+function stockIn() {
+    const product = document.getElementById("product").value;
+    const qty = parseInt(document.getElementById("quantity").value);
+
+    if (!product || isNaN(qty) || qty <= 0) {
+        alert("Enter valid quantity.");
+        return;
+    }
+
+    inventory[product].quantity += qty;
+
+    transactions.push({
+        product,
+        type: "Stock In",
+        quantity: qty,
+        date: new Date().toLocaleString()
+    });
+
+    saveData();
+    updateTable();
+    document.getElementById("quantity").value = "";
+}
+
+// ================= STOCK OUT =================
+function stockOut() {
+    const product = document.getElementById("product").value;
+    const qty = parseInt(document.getElementById("quantity").value);
+
+    if (!product || isNaN(qty) || qty <= 0) {
+        alert("Enter valid quantity.");
+        return;
+    }
+
+    if (inventory[product].quantity < qty) {
+        alert("Not enough stock.");
+        return;
+    }
+
+    inventory[product].quantity -= qty;
+
+    transactions.push({
+        product,
+        type: "Stock Out",
+        quantity: qty,
+        date: new Date().toLocaleString()
+    });
+
+    saveData();
+    updateTable();
+    document.getElementById("quantity").value = "";
+}
+
+// ================= DELETE PRODUCT =================
+function deleteProduct(product) {
+    if (confirm("Delete this product?")) {
+        delete inventory[product];
+        saveData();
+        updateProductDropdown();
+        updateTable();
+    }
+}
+
+// ================= EXPORT CSV =================
+function exportCSV() {
+    let csv = "Product,Category,Quantity\n";
+
+    for (let product in inventory) {
+        csv += `${product},${inventory[product].category},${inventory[product].quantity}\n`;
+    }
+
+    const blob = new Blob([csv], { type: "text/csv" });
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.download = "inventory.csv";
+    link.click();
+}
+
+// ================= INITIAL LOAD =================
+document.getElementById("product").addEventListener("change", updateCategoryField);
+
+updateProductDropdown();
+updateTable();
