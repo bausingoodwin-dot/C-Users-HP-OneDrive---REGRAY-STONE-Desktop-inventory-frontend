@@ -1,3 +1,6 @@
+// ------------------------
+// SELECTORS
+// ------------------------
 const tableBody = document.querySelector("#inventoryTable tbody");
 const totalProducts = document.getElementById("totalProducts");
 const totalStock = document.getElementById("totalStock");
@@ -8,11 +11,14 @@ const exportLogBtn = document.getElementById("exportLogBtn");
 const undoBtn = document.getElementById("undoBtn");
 const modal = document.getElementById("imageModal");
 const modalImg = document.getElementById("modalImage");
+const transactionBody = document.querySelector("#transactionLogTable tbody");
 
 let selectedImage = "";
 let stockLog = [];
 
+// ------------------------
 // CATEGORY & UNIT OPTIONS
+// ------------------------
 const categoryOptions = [
     "PATAGONIA QUARTZITE",
     "QUARTZITE",
@@ -26,16 +32,21 @@ const categoryOptions = [
 ];
 const unitOptions = ["SLABS", "PIECE"];
 
-/* LOAD DATA */
+// ------------------------
+// LOAD DATA
+// ------------------------
 window.addEventListener("load", () => {
     const savedProducts = JSON.parse(localStorage.getItem("products")) || [];
     const savedLog = JSON.parse(localStorage.getItem("stockLog")) || [];
     stockLog = savedLog;
     savedProducts.forEach(prod => addRowFromData(prod,false));
     updateSummary();
+    renderTransactionLog();
 });
 
-/* IMAGE UPLOAD */
+// ------------------------
+// IMAGE UPLOAD
+// ------------------------
 imageInput.addEventListener("change", function () {
     const file = this.files[0];
     if (!file) return;
@@ -44,15 +55,17 @@ imageInput.addEventListener("change", function () {
     reader.readAsDataURL(file);
 });
 
-/* ADD PRODUCT */
+// ------------------------
+// ADD PRODUCT
+// ------------------------
 addBtn.addEventListener("click", function () {
     const name = prompt("Product name:"); if(!name) return;
     const category = prompt("Category (default first option if empty):") || categoryOptions[0];
-    const size = prompt("Size:");
+    const size = prompt("Size:") || "";
     const unit = prompt("Unit (SLABS or PIECE):") || unitOptions[0];
-    const supplier = prompt("Supplier:");
-    const price = prompt("Unit price:");
-    const stock = prompt("Stock quantity:");
+    const supplier = prompt("Supplier:") || "";
+    const price = prompt("Unit price:") || "";
+    const stock = prompt("Stock quantity:") || "0";
     const today = new Date().toLocaleDateString();
 
     addRowFromData({
@@ -64,7 +77,9 @@ addBtn.addEventListener("click", function () {
     imageInput.value = "";
 });
 
-/* ADD ROW FROM DATA */
+// ------------------------
+// ADD ROW FROM DATA
+// ------------------------
 function addRowFromData(data, save=true){
     const row = tableBody.insertRow();
     row.insertCell(0).innerHTML = data.image ? `<img src="${data.image}" class="thumb" onclick="openImagePreview(this.src)">` : "No Image";
@@ -90,13 +105,17 @@ function addRowFromData(data, save=true){
     updateSummary();
 }
 
-/* STOCK EDIT PERSISTENT */
+// ------------------------
+// HANDLE STOCK EDIT
+// ------------------------
 tableBody.addEventListener("input", handleStockEdit);
 tableBody.addEventListener("blur", handleStockEdit, true);
 
 function handleStockEdit(e){
     const cell = e.target;
     const row = cell.closest("tr");
+
+    // STOCK CHANGES
     if(cell.parentElement.cellIndex===7){
         const oldStock = parseInt(cell.getAttribute("data-old-stock"))||0;
         const newStock = parseInt(cell.textContent)||0;
@@ -111,19 +130,41 @@ function handleStockEdit(e){
             saveProductsToLocal();
             saveLogToLocal();
             updateSummary();
+            renderTransactionLog();
         }
+    }
+
+    // OTHER EDITS (Name, Size, Supplier)
+    if(cell.tagName==="SPAN" && cell.contentEditable==="true"){
+        saveProductsToLocal();
     }
 }
 
-/* IMAGE PREVIEW */
+// ------------------------
+// SAVE SELECT CHANGES (Category, Unit)
+// ------------------------
+tableBody.addEventListener("change", function(e){
+    const sel = e.target;
+    if(sel.tagName==="SELECT"){
+        saveProductsToLocal();
+    }
+});
+
+// ------------------------
+// IMAGE PREVIEW
+// ------------------------
 function openImagePreview(src){ modalImg.src=src; modal.classList.add("show"); }
 modal.addEventListener("click",()=>modal.classList.remove("show"));
 document.addEventListener("keydown", e=>{if(e.key==="Escape") modal.classList.remove("show");});
 
-/* DELETE ROW */
+// ------------------------
+// DELETE ROW
+// ------------------------
 function deleteRow(btn){ btn.closest("tr").remove(); saveProductsToLocal(); updateSummary(); }
 
-/* UPDATE SUMMARY */
+// ------------------------
+// UPDATE SUMMARY
+// ------------------------
 function updateSummary(){
     const rows = tableBody.querySelectorAll("tr");
     totalProducts.textContent = rows.length;
@@ -136,7 +177,9 @@ function updateSummary(){
     totalStock.textContent=total;
 }
 
-/* SEARCH */
+// ------------------------
+// SEARCH
+// ------------------------
 searchBox.addEventListener("keyup", function(){
     const val=this.value.toLowerCase();
     tableBody.querySelectorAll("tr").forEach(row=>{
@@ -144,14 +187,32 @@ searchBox.addEventListener("keyup", function(){
     });
 });
 
-/* SORT */
+// ------------------------
+// SORT
+// ------------------------
 function sortTable(i){
     Array.from(tableBody.rows)
     .sort((a,b)=>a.cells[i].textContent.toLowerCase().localeCompare(b.cells[i].textContent.toLowerCase()))
     .forEach(r=>tableBody.appendChild(r));
 }
 
-/* EXPORT LOG */
+// ------------------------
+// RENDER TRANSACTION LOG
+// ------------------------
+function renderTransactionLog(){
+    transactionBody.innerHTML = "";
+    stockLog.forEach(tx=>{
+        const row = transactionBody.insertRow();
+        row.insertCell(0).textContent = tx.productName;
+        row.insertCell(1).textContent = tx.oldStock;
+        row.insertCell(2).textContent = tx.newStock;
+        row.insertCell(3).textContent = tx.date;
+    });
+}
+
+// ------------------------
+// EXPORT LOG
+// ------------------------
 exportLogBtn.addEventListener("click", function(){
     if(stockLog.length===0){ alert("No stock changes to export!"); return; }
     let csv="Product Name,Old Stock,New Stock,Date\n";
@@ -162,7 +223,9 @@ exportLogBtn.addEventListener("click", function(){
     document.body.appendChild(link); link.click(); document.body.removeChild(link);
 });
 
-/* UNDO LAST STOCK EDIT */
+// ------------------------
+// UNDO LAST STOCK EDIT
+// ------------------------
 undoBtn.addEventListener("click", function(){
     if(stockLog.length===0){ alert("No stock edits to undo!"); return; }
     const last = stockLog.pop();
@@ -176,11 +239,13 @@ undoBtn.addEventListener("click", function(){
             break;
         }
     }
-    saveProductsToLocal(); saveLogToLocal(); updateSummary();
+    saveProductsToLocal(); saveLogToLocal(); updateSummary(); renderTransactionLog();
     alert(`Undo successful! ${last.productName} stock reverted to ${last.oldStock}`);
 });
 
-/* LOCAL STORAGE */
+// ------------------------
+// LOCAL STORAGE
+// ------------------------
 function saveProductsToLocal(){
     const products=[];
     tableBody.querySelectorAll("tr").forEach(row=>{
