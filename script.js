@@ -3,8 +3,9 @@
 // ------------------------
 const mainPage = document.getElementById("mainPage");
 const transactionPage = document.getElementById("transactionPage");
+
+const dashboardLink = document.getElementById("dashboardLink");
 const logLink = document.getElementById("logLink");
-const backBtn = document.getElementById("backBtn");
 
 const tableBody = document.querySelector("#inventoryTable tbody");
 const totalProducts = document.getElementById("totalProducts");
@@ -12,14 +13,14 @@ const totalStock = document.getElementById("totalStock");
 const searchBox = document.getElementById("searchBox");
 const imageInput = document.getElementById("imageInput");
 const addBtn = document.getElementById("addBtn");
-const exportLogBtn = document.getElementById("exportLogBtn");
-const undoBtn = document.getElementById("undoBtn");
+const transactionBody = document.querySelector("#transactionLogTable tbody");
 const modal = document.getElementById("imageModal");
 const modalImg = document.getElementById("modalImage");
-const transactionBody = document.querySelector("#transactionLogTable tbody");
 
+// DATA STORAGE
 let selectedImage = "";
 let stockLog = [];
+let lastStockChange = {}; // store per cell last stock for undo
 
 // CATEGORY & UNIT OPTIONS
 const categoryOptions = ["PATAGONIA QUARTZITE","QUARTZITE","ONYX","MARBLE","GRANITE","TRAVERTINE","LIMESTONE","CRAZY CUTS","COBBLESTONE"];
@@ -53,7 +54,7 @@ imageInput.addEventListener("change", function () {
 // ------------------------
 addBtn.addEventListener("click", function () {
     const name = prompt("Product name:"); if(!name) return;
-    const category = prompt("Category (default first option if empty):") || categoryOptions[0];
+    const category = prompt("Category:") || categoryOptions[0];
     const size = prompt("Size:") || "";
     const unit = prompt("Unit (SLABS or PIECE):") || unitOptions[0];
     const supplier = prompt("Supplier:") || "";
@@ -81,17 +82,56 @@ function addRowFromData(data, save=true){
     row.insertCell(6).innerHTML = `<span contenteditable="true">${data.price}</span>`;
     row.insertCell(7).innerHTML = `<span contenteditable="true" data-old-stock="${data.stock}">${data.stock}</span>`;
     row.insertCell(8).textContent = data.updated;
-    row.insertCell(9).innerHTML = `<button onclick="deleteRow(this)">Delete</button>`;
+    row.insertCell(9).innerHTML = `<button onclick="undoStock(this)">Undo</button>`;
+    row.insertCell(10).innerHTML = `<button onclick="deleteRow(this)">Delete</button>`;
 
     if(save) saveProductsToLocal();
     updateSummary();
 }
 
 // ------------------------
+// UNDO PER PRODUCT
+// ------------------------
+function undoStock(btn){
+    const row = btn.closest("tr");
+    const cell = row.cells[7].querySelector("span");
+    const oldStock = parseInt(cell.getAttribute("data-old-stock")) || 0;
+    const currentStock = parseInt(cell.textContent) || 0;
+
+    if(oldStock !== currentStock){
+        // log transaction
+        stockLog.push({
+            productName: row.cells[1].textContent,
+            oldStock: currentStock,
+            newStock: oldStock,
+            date: new Date().toLocaleString()
+        });
+        cell.textContent = oldStock;
+        row.cells[8].textContent = new Date().toLocaleDateString();
+        cell.setAttribute("data-old-stock", oldStock);
+        saveProductsToLocal();
+        saveLogToLocal();
+        updateSummary();
+        renderTransactionLog();
+        alert("Undo applied for this product only!");
+    } else {
+        alert("Nothing to undo for this product!");
+    }
+}
+
+// ------------------------
 // PAGE SWITCHING
 // ------------------------
-logLink.addEventListener("click", () => { mainPage.style.display="none"; transactionPage.style.display="block"; renderTransactionLog(); });
-backBtn.addEventListener("click", () => { transactionPage.style.display="none"; mainPage.style.display="block"; });
+dashboardLink.addEventListener("click", () => {
+    transactionPage.style.display = "none";
+    mainPage.style.display = "block";
+});
+
+logLink.addEventListener("click", () => {
+    mainPage.style.display = "none";
+    transactionPage.style.display = "block";
+    renderTransactionLog();
+});
 
 // ------------------------
 // STOCK EDIT
@@ -152,28 +192,6 @@ function renderTransactionLog(){
         row.insertCell(3).textContent=tx.date;
     });
 }
-
-// EXPORT LOG
-exportLogBtn.addEventListener("click",function(){
-    if(stockLog.length===0){ alert("No stock changes to export!"); return; }
-    let csv="Product Name,Old Stock,New Stock,Date\n";
-    stockLog.forEach(e=>{ csv+=`${e.productName},${e.oldStock},${e.newStock},${e.date}\n`; });
-    const link=document.createElement("a"); link.href=encodeURI("data:text/csv;charset=utf-8,"+csv);
-    link.download=`stock_log_${new Date().toLocaleDateString().replace(/\//g,"-")}.csv`;
-    document.body.appendChild(link); link.click(); document.body.removeChild(link);
-});
-
-// UNDO LAST STOCK EDIT
-undoBtn.addEventListener("click",function(){
-    if(stockLog.length===0){ alert("No stock edits to undo!"); return; }
-    const last=stockLog.pop(); const rows=tableBody.querySelectorAll("tr");
-    for(let row of rows){ if(row.cells[1].textContent===last.productName){
-        const stockCell=row.cells[7].querySelector("span"); stockCell.textContent=last.oldStock; stockCell.setAttribute("data-old-stock",last.oldStock);
-        row.cells[8].textContent=new Date().toLocaleDateString(); break;
-    } }
-    saveProductsToLocal(); saveLogToLocal(); updateSummary(); renderTransactionLog();
-    alert(`Undo successful! ${last.productName} stock reverted to ${last.oldStock}`);
-});
 
 // LOCAL STORAGE
 function saveProductsToLocal(){
