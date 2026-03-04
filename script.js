@@ -27,16 +27,13 @@ function renderProducts(filter = "") {
     productSelect.innerHTML = "<option value=''>Select Product</option>";
 
     products.forEach((product, index) => {
-
         if (!product.name.toLowerCase().includes(filter.toLowerCase())) return;
 
-        // Add to select dropdown
         const option = document.createElement("option");
         option.value = index;
         option.textContent = product.name;
         productSelect.appendChild(option);
 
-        // Create table row
         const row = document.createElement("tr");
 
         row.innerHTML = `
@@ -48,7 +45,6 @@ function renderProducts(filter = "") {
             <td><button class="delete-btn">Delete</button></td>
         `;
 
-        // Delete Button
         row.querySelector(".delete-btn").addEventListener("click", () => {
             if (confirm("Delete this product?")) {
                 products.splice(index, 1);
@@ -57,7 +53,6 @@ function renderProducts(filter = "") {
             }
         });
 
-        // Image Preview
         row.querySelector("img").addEventListener("click", () => {
             previewImage(product.image);
         });
@@ -68,7 +63,7 @@ function renderProducts(filter = "") {
     updateSummary();
 }
 
-// Add Product (FIXED)
+// Add Product (bulletproof)
 addProductForm.addEventListener("submit", function(e) {
     e.preventDefault();
 
@@ -82,29 +77,46 @@ addProductForm.addEventListener("submit", function(e) {
         return;
     }
 
+    // If no file selected, use placeholder
     if (!imageFile) {
-        alert("Please select an image.");
+        addProduct(name, category, "https://via.placeholder.com/150");
         return;
     }
 
-    const reader = new FileReader();
+    // Try reading file
+    try {
+        const reader = new FileReader();
 
-    reader.onload = function() {
-        products.push({
-            name: name,
-            category: category,
-            quantity: 0,
-            image: reader.result,
-            lastUpdated: "-"
-        });
+        reader.onload = function() {
+            addProduct(name, category, reader.result);
+        };
 
-        saveData();
-        renderProducts(searchInput.value);
-        addProductForm.reset();
-    };
+        reader.onerror = function() {
+            console.warn("FileReader failed, using placeholder image.");
+            addProduct(name, category, "https://via.placeholder.com/150");
+        };
 
-    reader.readAsDataURL(imageFile);
+        reader.readAsDataURL(imageFile);
+    } catch (err) {
+        console.warn("FileReader not supported, using placeholder image.");
+        addProduct(name, category, "https://via.placeholder.com/150");
+    }
 });
+
+// Helper function to push product
+function addProduct(name, category, image) {
+    products.push({
+        name,
+        category,
+        quantity: 0,
+        image,
+        lastUpdated: "-"
+    });
+
+    saveData();
+    renderProducts(searchInput.value);
+    addProductForm.reset();
+}
 
 // Update category on select
 productSelect.addEventListener("change", function() {
@@ -175,7 +187,7 @@ document.getElementById("exportBtn").addEventListener("click", function() {
     a.click();
 });
 
-// Image Preview Modal
+// Image Preview
 function previewImage(src) {
     const overlay = document.createElement("div");
     overlay.style.position = "fixed";
