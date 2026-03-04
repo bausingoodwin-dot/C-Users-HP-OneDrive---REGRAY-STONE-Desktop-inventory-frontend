@@ -10,14 +10,26 @@ const modal = document.getElementById("imageModal");
 const modalImg = document.getElementById("modalImage");
 
 let selectedImage = "";
-let stockLog = []; // transaction log
+let stockLog = [];
+
+// CATEGORY OPTIONS
+const categoryOptions = [
+    "PATAGONIA QUARTZITE",
+    "QUARTZITE",
+    "ONYX",
+    "MARBLE",
+    "GRANITE",
+    "TRAVERTINE",
+    "LIMESTONE",
+    "CRAZY CUTS",
+    "COBBLESTONE"
+];
 
 /* LOAD DATA */
 window.addEventListener("load", () => {
     const savedProducts = JSON.parse(localStorage.getItem("products")) || [];
     const savedLog = JSON.parse(localStorage.getItem("stockLog")) || [];
     stockLog = savedLog;
-
     savedProducts.forEach(prod => addRowFromData(prod,false));
     updateSummary();
 });
@@ -34,7 +46,7 @@ imageInput.addEventListener("change", function () {
 /* ADD PRODUCT */
 addBtn.addEventListener("click", function () {
     const name = prompt("Product name:"); if(!name) return;
-    const category = prompt("Category:");
+    const category = prompt("Category (will default to first option if empty):") || categoryOptions[0];
     const size = prompt("Size:");
     const unit = prompt("Unit:");
     const supplier = prompt("Supplier:");
@@ -42,7 +54,10 @@ addBtn.addEventListener("click", function () {
     const stock = prompt("Stock quantity:");
     const today = new Date().toLocaleDateString();
 
-    addRowFromData({name, category, size, unit, supplier, price, stock, image:selectedImage, updated:today},true);
+    addRowFromData({
+        name, category, size, unit, supplier, price, stock,
+        image:selectedImage, updated:today
+    }, true);
 
     selectedImage = "";
     imageInput.value = "";
@@ -51,10 +66,14 @@ addBtn.addEventListener("click", function () {
 /* ADD ROW FROM DATA */
 function addRowFromData(data, save=true){
     const row = tableBody.insertRow();
-    const imgHTML = data.image ? `<img src="${data.image}" class="thumb" onclick="openImagePreview(this.src)">` : "No Image";
-    row.insertCell(0).innerHTML = imgHTML;
+    row.insertCell(0).innerHTML = data.image ? `<img src="${data.image}" class="thumb" onclick="openImagePreview(this.src)">` : "No Image";
+
     row.insertCell(1).innerHTML = `<span contenteditable="true">${data.name}</span>`;
-    row.insertCell(2).innerHTML = `<span contenteditable="true">${data.category}</span>`;
+
+    const selectHTML = `<select class="category-select">${categoryOptions.map(opt =>
+        `<option value="${opt}" ${opt === data.category ? "selected" : ""}>${opt}</option>`).join('')}</select>`;
+    row.insertCell(2).innerHTML = selectHTML;
+
     row.insertCell(3).innerHTML = `<span contenteditable="true">${data.size}</span>`;
     row.insertCell(4).innerHTML = `<span contenteditable="true">${data.unit}</span>`;
     row.insertCell(5).innerHTML = `<span contenteditable="true">${data.supplier}</span>`;
@@ -62,6 +81,7 @@ function addRowFromData(data, save=true){
     row.insertCell(7).innerHTML = `<span contenteditable="true" data-old-stock="${data.stock}">${data.stock}</span>`;
     row.insertCell(8).textContent = data.updated;
     row.insertCell(9).innerHTML = `<button onclick="deleteRow(this)">Delete</button>`;
+
     if(save) saveProductsToLocal();
     updateSummary();
 }
@@ -158,7 +178,7 @@ function saveProductsToLocal(){
     tableBody.querySelectorAll("tr").forEach(row=>{
         products.push({
             name:row.cells[1].textContent,
-            category:row.cells[2].textContent,
+            category: row.cells[2].querySelector(".category-select")?.value || "",
             size:row.cells[3].textContent,
             unit:row.cells[4].textContent,
             supplier:row.cells[5].textContent,
@@ -170,5 +190,4 @@ function saveProductsToLocal(){
     });
     localStorage.setItem("products",JSON.stringify(products));
 }
-
 function saveLogToLocal(){ localStorage.setItem("stockLog",JSON.stringify(stockLog)); }
