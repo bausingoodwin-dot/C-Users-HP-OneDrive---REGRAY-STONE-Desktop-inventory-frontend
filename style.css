@@ -69,6 +69,7 @@ body {
     border: none;
     color: white;
     cursor: pointer;
+    border-radius: 6px;
 }
 
 /* TABLE */
