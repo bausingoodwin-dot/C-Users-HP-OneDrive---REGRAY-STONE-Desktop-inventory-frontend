@@ -16,7 +16,7 @@ const imageContainer = document.getElementById("imagePreviewContainer");
 let products = JSON.parse(localStorage.getItem("products")) || [];
 let logs = JSON.parse(localStorage.getItem("logs")) || [];
 
-/* ------------------ IMAGE PREVIEW MINIMALIST ------------------ */
+/* ------------------ IMAGE PREVIEW ------------------ */
 imageContainer.addEventListener("click", () => imageInput.click());
 imageInput.addEventListener("change", () => {
     const file = imageInput.files[0];
@@ -62,7 +62,7 @@ productForm.addEventListener("submit", e=>{
     saveData();
     loadData();
     productForm.reset();
-    imagePreview.src = ""; // reset preview
+    imagePreview.src = "";
 });
 
 /* ------------------ RENDER ROW ------------------ */
