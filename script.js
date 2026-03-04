@@ -42,9 +42,9 @@ productForm.addEventListener("submit", e => {
 
     const product = {
         name,
-        category: "PATAGONIA QUARTZITE", // default category; will change in table dropdown
+        category: "PATAGONIA QUARTZITE",
         size,
-        unit: "SLABS", // default unit; will change in table dropdown
+        unit: "SLABS",
         supplier,
         price,
         stock,
