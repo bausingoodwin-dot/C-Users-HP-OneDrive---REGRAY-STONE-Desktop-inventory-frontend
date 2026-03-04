@@ -1,41 +1,38 @@
-let tableBody = document.querySelector("#inventoryTable tbody");
-let totalProducts = document.getElementById("totalProducts");
-let totalStock = document.getElementById("totalStock");
-let searchBox = document.getElementById("searchBox");
-let imageInput = document.getElementById("imageInput");
+const tableBody = document.querySelector("#inventoryTable tbody");
+const totalProducts = document.getElementById("totalProducts");
+const totalStock = document.getElementById("totalStock");
+const searchBox = document.getElementById("searchBox");
+const imageInput = document.getElementById("imageInput");
+const addBtn = document.getElementById("addBtn");
+const modal = document.getElementById("imageModal");
+const modalImg = document.getElementById("modalImage");
 
 let selectedImage = "";
 
-/* =========================
-   IMAGE HANDLING
-========================= */
-
+/* IMAGE LOAD */
 imageInput.addEventListener("change", function () {
     const file = this.files[0];
-    if (file) {
-        const reader = new FileReader();
-        reader.onload = function (e) {
-            selectedImage = e.target.result;
-        };
-        reader.readAsDataURL(file);
-    }
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = function (e) {
+        selectedImage = e.target.result;
+    };
+    reader.readAsDataURL(file);
 });
 
-/* =========================
-   ADD PRODUCT
-========================= */
+/* ADD PRODUCT */
+addBtn.addEventListener("click", function () {
 
-function addNewProduct() {
-
-    let name = prompt("Enter product name:");
+    let name = prompt("Product name:");
     if (!name) return;
 
-    let category = prompt("Enter category:");
-    let size = prompt("Enter size:");
-    let unit = prompt("Enter unit:");
-    let supplier = prompt("Enter supplier:");
-    let price = prompt("Enter unit price:");
-    let stock = prompt("Enter stock quantity:");
+    let category = prompt("Category:");
+    let size = prompt("Size:");
+    let unit = prompt("Unit:");
+    let supplier = prompt("Supplier:");
+    let price = prompt("Unit price:");
+    let stock = prompt("Stock quantity:");
 
     let today = new Date().toLocaleDateString();
 
@@ -43,8 +40,8 @@ function addNewProduct() {
 
     row.innerHTML = `
         <td>
-            ${selectedImage ? 
-                `<img src="${selectedImage}" class="thumb">`
+            ${selectedImage 
+                ? `<img src="${selectedImage}" class="thumb">`
                 : "No Image"}
         </td>
         <td contenteditable="true">${name}</td>
@@ -55,39 +52,31 @@ function addNewProduct() {
         <td contenteditable="true">${price}</td>
         <td contenteditable="true">${stock}</td>
         <td>${today}</td>
-        <td>
-            <button onclick="deleteRow(this)">Delete</button>
-        </td>
+        <td><button onclick="deleteRow(this)">Delete</button></td>
     `;
 
     selectedImage = "";
     imageInput.value = "";
 
     updateSummary();
-}
+});
 
-/* =========================
-   DELETE
-========================= */
-
-function deleteRow(button) {
-    button.closest("tr").remove();
+/* DELETE */
+function deleteRow(btn) {
+    btn.closest("tr").remove();
     updateSummary();
 }
 
-/* =========================
-   UPDATE SUMMARY
-========================= */
-
+/* SUMMARY */
 function updateSummary() {
-    let rows = tableBody.querySelectorAll("tr");
+    const rows = tableBody.querySelectorAll("tr");
     totalProducts.textContent = rows.length;
 
-    let stockTotal = 0;
+    let total = 0;
 
     rows.forEach(row => {
         let stock = parseInt(row.cells[7].textContent) || 0;
-        stockTotal += stock;
+        total += stock;
 
         if (stock < 5) {
             row.classList.add("low-stock");
@@ -96,53 +85,50 @@ function updateSummary() {
         }
     });
 
-    totalStock.textContent = stockTotal;
+    totalStock.textContent = total;
 }
 
-/* =========================
-   SEARCH
-========================= */
-
+/* SEARCH */
 searchBox.addEventListener("keyup", function () {
-    let value = this.value.toLowerCase();
-    let rows = tableBody.querySelectorAll("tr");
+    const value = this.value.toLowerCase();
+    const rows = tableBody.querySelectorAll("tr");
 
     rows.forEach(row => {
-        let text = row.textContent.toLowerCase();
-        row.style.display = text.includes(value) ? "" : "none";
+        row.style.display = row.textContent.toLowerCase().includes(value)
+            ? ""
+            : "none";
     });
 });
 
-/* =========================
-   SORT
-========================= */
-
-function sortTable(columnIndex) {
-    let rows = Array.from(tableBody.rows);
+/* SORT */
+function sortTable(index) {
+    const rows = Array.from(tableBody.rows);
 
     rows.sort((a, b) => {
-        let A = a.cells[columnIndex].textContent.toLowerCase();
-        let B = b.cells[columnIndex].textContent.toLowerCase();
+        let A = a.cells[index].textContent.toLowerCase();
+        let B = b.cells[index].textContent.toLowerCase();
         return A.localeCompare(B);
     });
 
     rows.forEach(row => tableBody.appendChild(row));
 }
 
-/* =========================
-   IMAGE MODAL PREVIEW
-========================= */
-
+/* IMAGE CLICK PREVIEW */
 document.addEventListener("click", function (e) {
     if (e.target.classList.contains("thumb")) {
-        let modal = document.getElementById("imageModal");
-        let modalImg = document.getElementById("modalImage");
-
         modalImg.src = e.target.src;
         modal.classList.add("show");
     }
 });
 
-document.getElementById("imageModal").addEventListener("click", function () {
-    this.classList.remove("show");
+/* CLOSE MODAL */
+modal.addEventListener("click", function () {
+    modal.classList.remove("show");
+});
+
+/* ESC CLOSE */
+document.addEventListener("keydown", function (e) {
+    if (e.key === "Escape") {
+        modal.classList.remove("show");
+    }
 });
