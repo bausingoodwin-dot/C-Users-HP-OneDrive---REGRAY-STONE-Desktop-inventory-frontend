@@ -6,6 +6,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
 
 <div class="dashboard">
@@ -28,7 +29,7 @@
             <h1>Inventory Dashboard</h1>
         </div>
 
-        <!-- SUMMARY CARDS -->
+        <!-- CARDS -->
         <div class="cards">
             <div class="card">
                 <h3>Total Products</h3>
@@ -45,25 +46,41 @@
             <input type="text" id="searchBox" placeholder="Search products...">
             <input type="file" id="imageInput" accept="image/*">
             <button id="addBtn">+ Add Product</button>
-            <button id="exportLogBtn">Export Stock Log</button>
-            <button id="undoBtn">Undo Last Stock Edit</button>
+            <button id="undoBtn">Undo Last Stock</button>
+            <button id="exportLogBtn">Export Log</button>
         </div>
 
-        <!-- TABLE -->
+        <!-- INVENTORY TABLE -->
         <div class="table-container">
             <table id="inventoryTable">
                 <thead>
                     <tr>
                         <th>Image</th>
                         <th onclick="sortTable(1)">Product Name</th>
-                        <th>Category</th>
+                        <th onclick="sortTable(2)">Category</th>
                         <th onclick="sortTable(3)">Size</th>
                         <th onclick="sortTable(4)">Unit</th>
                         <th onclick="sortTable(5)">Supplier</th>
                         <th onclick="sortTable(6)">Unit Price</th>
-                        <th onclick="sortTable(7)">Stock</th>
+                        <th onclick="sortTable(7)">Current Stock</th>
                         <th onclick="sortTable(8)">Updated</th>
                         <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+
+        <!-- TRANSACTION LOG -->
+        <div class="table-container" style="margin-top:20px;">
+            <h3>Transaction Log</h3>
+            <table id="transactionLogTable">
+                <thead>
+                    <tr>
+                        <th>Product Name</th>
+                        <th>Old Stock</th>
+                        <th>New Stock</th>
+                        <th>Date</th>
                     </tr>
                 </thead>
                 <tbody></tbody>
@@ -73,9 +90,9 @@
     </div>
 </div>
 
-<!-- IMAGE MODAL -->
+<!-- IMAGE PREVIEW MODAL -->
 <div id="imageModal" class="modal">
-    <img id="modalImage" alt="Preview">
+    <img id="modalImage">
 </div>
 
 <script src="script.js"></script>
