@@ -12,7 +12,7 @@ const modalImg = document.getElementById("modalImage");
 let selectedImage = "";
 let stockLog = []; // transaction log
 
-/* LOAD DATA FROM LOCAL STORAGE */
+/* LOAD DATA */
 window.addEventListener("load", () => {
     const savedProducts = JSON.parse(localStorage.getItem("products")) || [];
     const savedLog = JSON.parse(localStorage.getItem("stockLog")) || [];
@@ -66,19 +66,30 @@ function addRowFromData(data, save=true){
     updateSummary();
 }
 
-/* STOCK EDIT & AUTO DATE */
-tableBody.addEventListener("input", function(e){
+/* STOCK EDIT PERSISTENT */
+tableBody.addEventListener("input", handleStockEdit);
+tableBody.addEventListener("blur", handleStockEdit, true);
+
+function handleStockEdit(e){
     const cell = e.target;
     const row = cell.closest("tr");
-    if(cell.parentElement.cellIndex===7){
-        const oldStock = parseInt(cell.getAttribute("data-old-stock"))||0;
-        const newStock = parseInt(cell.textContent)||0;
-        stockLog.push({productName:row.cells[1].textContent, oldStock, newStock, date:new Date().toLocaleString()});
-        cell.setAttribute("data-old-stock",newStock);
-        row.cells[8].textContent = new Date().toLocaleDateString();
-        saveProductsToLocal(); saveLogToLocal(); updateSummary();
+    if(cell.parentElement.cellIndex === 7){
+        const oldStock = parseInt(cell.getAttribute("data-old-stock")) || 0;
+        const newStock = parseInt(cell.textContent) || 0;
+        if(newStock !== oldStock){
+            stockLog.push({
+                productName: row.cells[1].textContent,
+                oldStock, newStock,
+                date: new Date().toLocaleString()
+            });
+            cell.setAttribute("data-old-stock", newStock);
+            row.cells[8].textContent = new Date().toLocaleDateString();
+            saveProductsToLocal();
+            saveLogToLocal();
+            updateSummary();
+        }
     }
-});
+}
 
 /* IMAGE PREVIEW */
 function openImagePreview(src){ modalImg.src=src; modal.classList.add("show"); }
@@ -159,4 +170,5 @@ function saveProductsToLocal(){
     });
     localStorage.setItem("products",JSON.stringify(products));
 }
+
 function saveLogToLocal(){ localStorage.setItem("stockLog",JSON.stringify(stockLog)); }
