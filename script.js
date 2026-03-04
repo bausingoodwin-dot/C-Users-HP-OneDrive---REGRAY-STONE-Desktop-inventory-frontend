@@ -12,7 +12,7 @@ const modalImg = document.getElementById("modalImage");
 let selectedImage = "";
 let stockLog = [];
 
-// CATEGORY OPTIONS
+// CATEGORY & UNIT OPTIONS
 const categoryOptions = [
     "PATAGONIA QUARTZITE",
     "QUARTZITE",
@@ -47,9 +47,9 @@ imageInput.addEventListener("change", function () {
 /* ADD PRODUCT */
 addBtn.addEventListener("click", function () {
     const name = prompt("Product name:"); if(!name) return;
-    const category = prompt("Category (will default to first option if empty):") || categoryOptions[0];
+    const category = prompt("Category (default first option if empty):") || categoryOptions[0];
     const size = prompt("Size:");
-    const unit = prompt("Unit:");
+    const unit = prompt("Unit (SLABS or PIECE):") || unitOptions[0];
     const supplier = prompt("Supplier:");
     const price = prompt("Unit price:");
     const stock = prompt("Stock quantity:");
@@ -68,15 +68,18 @@ addBtn.addEventListener("click", function () {
 function addRowFromData(data, save=true){
     const row = tableBody.insertRow();
     row.insertCell(0).innerHTML = data.image ? `<img src="${data.image}" class="thumb" onclick="openImagePreview(this.src)">` : "No Image";
-
     row.insertCell(1).innerHTML = `<span contenteditable="true">${data.name}</span>`;
 
-    const selectHTML = `<select class="category-select">${categoryOptions.map(opt =>
-        `<option value="${opt}" ${opt === data.category ? "selected" : ""}>${opt}</option>`).join('')}</select>`;
-    row.insertCell(2).innerHTML = selectHTML;
+    const selectCategory = `<select class="category-select">${categoryOptions.map(opt =>
+        `<option value="${opt}" ${opt===data.category?"selected":""}>${opt}</option>`).join('')}</select>`;
+    row.insertCell(2).innerHTML = selectCategory;
 
     row.insertCell(3).innerHTML = `<span contenteditable="true">${data.size}</span>`;
-    row.insertCell(4).innerHTML = `<span contenteditable="true">${data.unit}</span>`;
+
+    const selectUnit = `<select class="unit-select">${unitOptions.map(opt =>
+        `<option value="${opt}" ${opt===data.unit?"selected":""}>${opt}</option>`).join('')}</select>`;
+    row.insertCell(4).innerHTML = selectUnit;
+
     row.insertCell(5).innerHTML = `<span contenteditable="true">${data.supplier}</span>`;
     row.insertCell(6).innerHTML = `<span contenteditable="true">${data.price}</span>`;
     row.insertCell(7).innerHTML = `<span contenteditable="true" data-old-stock="${data.stock}">${data.stock}</span>`;
@@ -94,17 +97,17 @@ tableBody.addEventListener("blur", handleStockEdit, true);
 function handleStockEdit(e){
     const cell = e.target;
     const row = cell.closest("tr");
-    if(cell.parentElement.cellIndex === 7){
-        const oldStock = parseInt(cell.getAttribute("data-old-stock")) || 0;
-        const newStock = parseInt(cell.textContent) || 0;
-        if(newStock !== oldStock){
+    if(cell.parentElement.cellIndex===7){
+        const oldStock = parseInt(cell.getAttribute("data-old-stock"))||0;
+        const newStock = parseInt(cell.textContent)||0;
+        if(newStock!==oldStock){
             stockLog.push({
                 productName: row.cells[1].textContent,
                 oldStock, newStock,
                 date: new Date().toLocaleString()
             });
-            cell.setAttribute("data-old-stock", newStock);
-            row.cells[8].textContent = new Date().toLocaleDateString();
+            cell.setAttribute("data-old-stock",newStock);
+            row.cells[8].textContent=new Date().toLocaleDateString();
             saveProductsToLocal();
             saveLogToLocal();
             updateSummary();
@@ -115,7 +118,7 @@ function handleStockEdit(e){
 /* IMAGE PREVIEW */
 function openImagePreview(src){ modalImg.src=src; modal.classList.add("show"); }
 modal.addEventListener("click",()=>modal.classList.remove("show"));
-document.addEventListener("keydown",e=>{if(e.key==="Escape") modal.classList.remove("show");});
+document.addEventListener("keydown", e=>{if(e.key==="Escape") modal.classList.remove("show");});
 
 /* DELETE ROW */
 function deleteRow(btn){ btn.closest("tr").remove(); saveProductsToLocal(); updateSummary(); }
@@ -134,7 +137,7 @@ function updateSummary(){
 }
 
 /* SEARCH */
-searchBox.addEventListener("keyup",function(){
+searchBox.addEventListener("keyup", function(){
     const val=this.value.toLowerCase();
     tableBody.querySelectorAll("tr").forEach(row=>{
         row.style.display=row.textContent.toLowerCase().includes(val)?"":"none";
@@ -142,10 +145,14 @@ searchBox.addEventListener("keyup",function(){
 });
 
 /* SORT */
-function sortTable(i){ Array.from(tableBody.rows).sort((a,b)=>a.cells[i].textContent.toLowerCase().localeCompare(b.cells[i].textContent.toLowerCase())).forEach(r=>tableBody.appendChild(r)); }
+function sortTable(i){
+    Array.from(tableBody.rows)
+    .sort((a,b)=>a.cells[i].textContent.toLowerCase().localeCompare(b.cells[i].textContent.toLowerCase()))
+    .forEach(r=>tableBody.appendChild(r));
+}
 
 /* EXPORT LOG */
-exportLogBtn.addEventListener("click",function(){
+exportLogBtn.addEventListener("click", function(){
     if(stockLog.length===0){ alert("No stock changes to export!"); return; }
     let csv="Product Name,Old Stock,New Stock,Date\n";
     stockLog.forEach(e=>{ csv+=`${e.productName},${e.oldStock},${e.newStock},${e.date}\n`; });
@@ -156,10 +163,10 @@ exportLogBtn.addEventListener("click",function(){
 });
 
 /* UNDO LAST STOCK EDIT */
-undoBtn.addEventListener("click",function(){
+undoBtn.addEventListener("click", function(){
     if(stockLog.length===0){ alert("No stock edits to undo!"); return; }
-    const last=stockLog.pop();
-    const rows=tableBody.querySelectorAll("tr");
+    const last = stockLog.pop();
+    const rows = tableBody.querySelectorAll("tr");
     for(let row of rows){
         if(row.cells[1].textContent===last.productName){
             const stockCell=row.cells[7].querySelector("span");
@@ -178,18 +185,17 @@ function saveProductsToLocal(){
     const products=[];
     tableBody.querySelectorAll("tr").forEach(row=>{
         products.push({
-            name:row.cells[1].textContent,
-            category: row.cells[2].querySelector(".category-select")?.value || "",
-            size:row.cells[3].textContent,
-            unit:row.cells[4].textContent,
-            supplier:row.cells[5].textContent,
-            price:row.cells[6].textContent,
-            stock:row.cells[7].querySelector("span").textContent,
-            image:row.cells[0].querySelector("img")?.src||"",
-            updated:row.cells[8].textContent
+            name: row.cells[1].textContent,
+            category: row.cells[2].querySelector(".category-select")?.value||"",
+            size: row.cells[3].textContent,
+            unit: row.cells[4].querySelector(".unit-select")?.value||"",
+            supplier: row.cells[5].textContent,
+            price: row.cells[6].textContent,
+            stock: row.cells[7].querySelector("span").textContent,
+            image: row.cells[0].querySelector("img")?.src||"",
+            updated: row.cells[8].textContent
         });
     });
     localStorage.setItem("products",JSON.stringify(products));
 }
 function saveLogToLocal(){ localStorage.setItem("stockLog",JSON.stringify(stockLog)); }
-
