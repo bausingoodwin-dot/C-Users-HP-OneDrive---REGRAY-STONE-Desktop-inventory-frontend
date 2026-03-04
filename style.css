@@ -1,6 +1,3 @@
-/* =========================
-   RESET
-========================= */
 * {
     margin: 0;
     padding: 0;
@@ -8,22 +5,10 @@
 }
 
 body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: #f0f2f5;
+    font-family: Arial, sans-serif;
+    background: #f2f4f7;
 }
 
-button {
-    cursor: pointer;
-    transition: 0.2s;
-}
-
-button:hover {
-    opacity: 0.85;
-}
-
-/* =========================
-   LAYOUT
-========================= */
 .dashboard {
     display: flex;
     min-height: 100vh;
@@ -37,23 +22,13 @@ button:hover {
     padding: 20px;
 }
 
-.sidebar h2 {
-    margin-bottom: 20px;
-}
-
 .sidebar ul {
     list-style: none;
+    margin-top: 20px;
 }
 
 .sidebar ul li {
-    margin: 12px 0;
-    padding: 8px 12px;
-    border-radius: 6px;
-    transition: 0.2s;
-}
-
-.sidebar ul li:hover {
-    background: #34495e;
+    margin-bottom: 12px;
 }
 
 /* MAIN */
@@ -62,82 +37,56 @@ button:hover {
     padding: 20px;
 }
 
-.header h1 {
-    margin-bottom: 20px;
-    color: #34495e;
-}
-
-/* =========================
-   CARDS
-========================= */
+/* CARDS */
 .cards {
     display: flex;
     gap: 20px;
     margin-bottom: 20px;
-    flex-wrap: wrap;
 }
 
 .card {
-    flex: 1;
-    min-width: 180px;
     background: white;
     padding: 20px;
-    border-radius: 12px;
+    border-radius: 10px;
+    flex: 1;
     text-align: center;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    box-shadow: 0 3px 10px rgba(0,0,0,0.1);
 }
 
-/* =========================
-   CONTROLS
-========================= */
+/* CONTROLS */
 .controls {
-    display: flex;
-    gap: 10px;
     margin-bottom: 15px;
-    flex-wrap: wrap;
-    align-items: center;
 }
 
-#searchBox {
-    padding: 8px 12px;
-    border-radius: 8px;
-    border: 1px solid #ccc;
-    width: 220px;
+.controls input,
+.controls button {
+    padding: 8px;
+    margin-right: 10px;
 }
 
 .controls button {
     background: #e74c3c;
-    color: white;
     border: none;
-    padding: 8px 14px;
-    border-radius: 8px;
-    font-weight: bold;
+    color: white;
+    cursor: pointer;
 }
 
-.controls button:hover {
-    background: #c0392b;
-}
-
-/* =========================
-   TABLE
-========================= */
+/* TABLE */
 .table-container {
     background: white;
-    padding: 15px;
-    border-radius: 12px;
+    padding: 10px;
+    border-radius: 10px;
     overflow-x: auto;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
 }
 
 table {
     width: 100%;
     border-collapse: collapse;
-    min-width: 1000px;
 }
 
 th, td {
-    padding: 12px;
-    border-bottom: 1px solid #eee;
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
     text-align: center;
 }
 
@@ -147,37 +96,21 @@ th {
     cursor: pointer;
 }
 
-tr:nth-child(even) {
-    background: #f9f9f9;
-}
-
-td[contenteditable="true"] {
-    background: #fcf8e8;
-}
-
-.low-stock {
-    background: #f8d7da !important;
-}
-
-/* =========================
-   IMAGE THUMBNAIL
-========================= */
+/* IMAGE THUMB */
 .thumb {
     width: 60px;
     height: 60px;
     object-fit: cover;
     border-radius: 8px;
     cursor: pointer;
-    transition: 0.3s;
 }
 
-.thumb:hover {
-    transform: scale(1.1);
+/* LOW STOCK */
+.low-stock {
+    background: #f8d7da !important;
 }
 
-/* =========================
-   IMAGE MODAL
-========================= */
+/* MODAL */
 .modal {
     position: fixed;
     inset: 0;
@@ -188,39 +121,15 @@ td[contenteditable="true"] {
     opacity: 0;
     visibility: hidden;
     transition: 0.3s;
-    z-index: 1000;
 }
 
 .modal img {
     max-width: 90%;
     max-height: 90%;
     border-radius: 12px;
-    transform: scale(0.8);
-    transition: 0.3s;
 }
 
 .modal.show {
     opacity: 1;
     visibility: visible;
-}
-
-.modal.show img {
-    transform: scale(1);
-}
-
-/* =========================
-   RESPONSIVE
-========================= */
-@media(max-width:768px) {
-    .dashboard {
-        flex-direction: column;
-    }
-
-    .sidebar {
-        width: 100%;
-    }
-
-    .cards {
-        flex-direction: column;
-    }
 }
