@@ -1,102 +1,110 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Inventory Dashboard</title>
-<link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inventory Management</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
+    <header>
+        <h1>Inventory Management</h1>
+        <nav>
+            <button id="showDashboardBtn">Dashboard</button>
+            <button id="showTransactionsBtn">Transactions Log</button>
+        </nav>
+    </header>
 
-<div class="dashboard">
+    <main>
+        <!-- DASHBOARD -->
+        <section id="dashboardPage">
+            <div class="add-product">
+                <h2>Add Product</h2>
+                <form id="productForm">
+                    <input type="text" id="productName" placeholder="Product Name" required>
 
-  <!-- SIDEBAR -->
-  <div class="sidebar">
-    <h2>Inventory System</h2>
-    <ul>
-      <li id="dashboardLink">Dashboard</li>
-      <li id="logLink">Transaction Log</li>
-    </ul>
-  </div>
+                    <!-- Category Dropdown -->
+                    <select id="productCategory" required>
+                        <option value="">Select Category</option>
+                        <option value="PATAGONIA QUARTZITE">PATAGONIA QUARTZITE</option>
+                        <option value="QUARTZITE">QUARTZITE</option>
+                        <option value="ONYX">ONYX</option>
+                        <option value="MARBLE">MARBLE</option>
+                        <option value="GRANITE">GRANITE</option>
+                        <option value="TRAVERTINE">TRAVERTINE</option>
+                        <option value="LIMESTONE">LIMESTONE</option>
+                        <option value="CRAZY CUTS">CRAZY CUTS</option>
+                        <option value="COBBLESTONE">COBBLESTONE</option>
+                    </select>
 
-  <!-- MAIN CONTENT -->
-  <div class="main">
+                    <input type="text" id="productSize" placeholder="Size">
 
-    <!-- DASHBOARD PAGE -->
-    <div id="dashboardPage">
-      <div class="header">
-        <h1>Inventory Dashboard</h1>
-      </div>
+                    <!-- Unit Dropdown -->
+                    <select id="productUnit">
+                        <option value="">Select Unit</option>
+                        <option value="SLABS">SLABS</option>
+                        <option value="PIECE">PIECE</option>
+                    </select>
 
-      <!-- CARDS -->
-      <div class="cards">
-        <div class="card">
-          <h3>Total Products</h3>
-          <p id="totalProducts">0</p>
-        </div>
-        <div class="card">
-          <h3>Total Stock</h3>
-          <p id="totalStock">0</p>
-        </div>
-      </div>
+                    <input type="text" id="productSupplier" placeholder="Supplier">
+                    <input type="number" id="productPrice" placeholder="Price">
+                    <input type="number" id="productQty" placeholder="Quantity" min="1" required>
+                    <input type="file" id="productImage" accept="image/*">
+                    <button type="submit">Add Product</button>
+                </form>
+            </div>
 
-      <!-- CONTROLS -->
-      <div class="controls">
-        <input type="text" id="searchBox" placeholder="Search products...">
-        <button id="addBtn">+ Add Product</button>
-      </div>
+            <div class="summary">
+                <p>Total Products: <span id="totalProducts">0</span></p>
+                <p>Total Stock: <span id="totalStock">0</span></p>
+            </div>
 
-      <!-- TABLE -->
-      <div class="table-container">
-        <table id="inventoryTable">
-          <thead>
-            <tr>
-              <th>Image</th>
-              <th>Name</th>
-              <th>Category</th>
-              <th>Size</th>
-              <th>Unit</th>
-              <th>Supplier</th>
-              <th>Price</th>
-              <th>Stock</th>
-              <th>Last Updated</th>
-              <th>Action</th>
-            </tr>
-          </thead>
-          <tbody></tbody>
-        </table>
-      </div>
+            <div class="table-container">
+                <table id="inventoryTable">
+                    <thead>
+                        <tr>
+                            <th>Image</th>
+                            <th>Name</th>
+                            <th>Category</th>
+                            <th>Size</th>
+                            <th>Unit</th>
+                            <th>Supplier</th>
+                            <th>Price</th>
+                            <th>Stock</th>
+                            <th>Last Updated</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- TRANSACTIONS -->
+        <section id="transactionPage" style="display:none;">
+            <h2>Transaction Log</h2>
+            <div class="table-container">
+                <table id="logTable">
+                    <thead>
+                        <tr>
+                            <th>Product</th>
+                            <th>Old Stock</th>
+                            <th>New Stock</th>
+                            <th>Date</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+
+    <!-- Image Preview Modal -->
+    <div id="imageModal" class="modal">
+        <span class="close">&times;</span>
+        <img class="modal-content" id="modalImage">
     </div>
 
-    <!-- TRANSACTION LOG PAGE -->
-    <div id="transactionPage" style="display:none;">
-      <div class="header">
-        <h1>Transaction Log</h1>
-      </div>
-      <div class="table-container">
-        <table id="logTable">
-          <thead>
-            <tr>
-              <th>Product</th>
-              <th>Old Stock</th>
-              <th>New Stock</th>
-              <th>Date</th>
-            </tr>
-          </thead>
-          <tbody></tbody>
-        </table>
-      </div>
-    </div>
-
-  </div>
-</div>
-
-<!-- IMAGE MODAL -->
-<div id="imageModal" class="modal">
-  <img id="modalImage">
-</div>
-
-<script src="script.js"></script>
+    <script src="script.js"></script>
 </body>
 </html>
-
