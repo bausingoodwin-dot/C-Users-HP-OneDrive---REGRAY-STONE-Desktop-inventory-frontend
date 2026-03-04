@@ -1,110 +1,88 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Inventory Management</title>
-    <link rel="stylesheet" href="style.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Inventory Management</title>
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <header>
-        <h1>Inventory Management</h1>
-        <nav>
-            <button id="showDashboardBtn">Dashboard</button>
-            <button id="showTransactionsBtn">Transactions Log</button>
-        </nav>
-    </header>
 
-    <main>
-        <!-- DASHBOARD -->
-        <section id="dashboardPage">
-            <div class="add-product">
-                <h2>Add Product</h2>
-                <form id="productForm">
-                    <input type="text" id="productName" placeholder="Product Name" required>
+<header>
+    <h1>Inventory Management</h1>
+    <nav>
+        <button id="showDashboardBtn">Dashboard</button>
+        <button id="showTransactionsBtn">Transactions Log</button>
+    </nav>
+</header>
 
-                    <!-- Category Dropdown -->
-                    <select id="productCategory" required>
-                        <option value="">Select Category</option>
-                        <option value="PATAGONIA QUARTZITE">PATAGONIA QUARTZITE</option>
-                        <option value="QUARTZITE">QUARTZITE</option>
-                        <option value="ONYX">ONYX</option>
-                        <option value="MARBLE">MARBLE</option>
-                        <option value="GRANITE">GRANITE</option>
-                        <option value="TRAVERTINE">TRAVERTINE</option>
-                        <option value="LIMESTONE">LIMESTONE</option>
-                        <option value="CRAZY CUTS">CRAZY CUTS</option>
-                        <option value="COBBLESTONE">COBBLESTONE</option>
-                    </select>
+<main>
+    <!-- Dashboard -->
+    <section id="dashboardPage">
+        <div class="add-product">
+            <h2>Add Product</h2>
+            <form id="productForm">
+                <input type="text" id="productName" placeholder="Product Name" required>
+                <input type="text" id="productSize" placeholder="Size">
+                <input type="text" id="productSupplier" placeholder="Supplier">
+                <input type="number" id="productPrice" placeholder="Price">
+                <input type="number" id="productQty" placeholder="Quantity" min="1" required>
+                <input type="file" id="productImage" accept="image/*">
+                <button type="submit">Add Product</button>
+            </form>
+        </div>
 
-                    <input type="text" id="productSize" placeholder="Size">
+        <div class="summary">
+            <p>Total Products: <span id="totalProducts">0</span></p>
+            <p>Total Stock: <span id="totalStock">0</span></p>
+        </div>
 
-                    <!-- Unit Dropdown -->
-                    <select id="productUnit">
-                        <option value="">Select Unit</option>
-                        <option value="SLABS">SLABS</option>
-                        <option value="PIECE">PIECE</option>
-                    </select>
+        <div class="table-container">
+            <table id="inventoryTable">
+                <thead>
+                    <tr>
+                        <th>Image</th>
+                        <th>Name</th>
+                        <th>Category</th>
+                        <th>Size</th>
+                        <th>Unit</th>
+                        <th>Supplier</th>
+                        <th>Price</th>
+                        <th>Stock</th>
+                        <th>Last Updated</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+    </section>
 
-                    <input type="text" id="productSupplier" placeholder="Supplier">
-                    <input type="number" id="productPrice" placeholder="Price">
-                    <input type="number" id="productQty" placeholder="Quantity" min="1" required>
-                    <input type="file" id="productImage" accept="image/*">
-                    <button type="submit">Add Product</button>
-                </form>
-            </div>
+    <!-- Transactions -->
+    <section id="transactionPage" style="display:none;">
+        <h2>Transaction Log</h2>
+        <div class="table-container">
+            <table id="logTable">
+                <thead>
+                    <tr>
+                        <th>Product</th>
+                        <th>Old Stock</th>
+                        <th>New Stock</th>
+                        <th>Date</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+    </section>
+</main>
 
-            <div class="summary">
-                <p>Total Products: <span id="totalProducts">0</span></p>
-                <p>Total Stock: <span id="totalStock">0</span></p>
-            </div>
+<!-- Image Modal -->
+<div id="imageModal" class="modal">
+    <span class="close">&times;</span>
+    <img class="modal-content" id="modalImage">
+</div>
 
-            <div class="table-container">
-                <table id="inventoryTable">
-                    <thead>
-                        <tr>
-                            <th>Image</th>
-                            <th>Name</th>
-                            <th>Category</th>
-                            <th>Size</th>
-                            <th>Unit</th>
-                            <th>Supplier</th>
-                            <th>Price</th>
-                            <th>Stock</th>
-                            <th>Last Updated</th>
-                            <th>Action</th>
-                        </tr>
-                    </thead>
-                    <tbody></tbody>
-                </table>
-            </div>
-        </section>
-
-        <!-- TRANSACTIONS -->
-        <section id="transactionPage" style="display:none;">
-            <h2>Transaction Log</h2>
-            <div class="table-container">
-                <table id="logTable">
-                    <thead>
-                        <tr>
-                            <th>Product</th>
-                            <th>Old Stock</th>
-                            <th>New Stock</th>
-                            <th>Date</th>
-                        </tr>
-                    </thead>
-                    <tbody></tbody>
-                </table>
-            </div>
-        </section>
-    </main>
-
-    <!-- Image Preview Modal -->
-    <div id="imageModal" class="modal">
-        <span class="close">&times;</span>
-        <img class="modal-content" id="modalImage">
-    </div>
-
-    <script src="script.js"></script>
+<script src="script.js"></script>
 </body>
 </html>
