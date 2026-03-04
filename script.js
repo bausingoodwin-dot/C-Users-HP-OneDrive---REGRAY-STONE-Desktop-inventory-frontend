@@ -1,169 +1,211 @@
-const mainPage = document.getElementById("mainPage");
-const transactionPage = document.getElementById("transactionPage");
-const dashboardLink = document.getElementById("dashboardLink");
-const logLink = document.getElementById("logLink");
-
 const tableBody = document.querySelector("#inventoryTable tbody");
 const totalProducts = document.getElementById("totalProducts");
 const totalStock = document.getElementById("totalStock");
-const searchBox = document.getElementById("searchBox");
-const imageInput = document.getElementById("imageInput");
-const addBtn = document.getElementById("addBtn");
-const transactionBody = document.querySelector("#transactionLogTable tbody");
-const modal = document.getElementById("imageModal");
-const modalImg = document.getElementById("modalImage");
+const logBody = document.querySelector("#logTable tbody");
 
-let selectedImage = "";
-let stockLog = [];
-const categoryOptions = ["PATAGONIA QUARTZITE","QUARTZITE","ONYX","MARBLE","GRANITE","TRAVERTINE","LIMESTONE","CRAZY CUTS","COBBLESTONE"];
-const unitOptions = ["SLABS","PIECE"];
+let products = JSON.parse(localStorage.getItem("products")) || [];
+let logs = JSON.parse(localStorage.getItem("logs")) || [];
 
-// LOAD DATA
-window.addEventListener("load",()=>{
-    const savedProducts = JSON.parse(localStorage.getItem("products"))||[];
-    const savedLog = JSON.parse(localStorage.getItem("stockLog"))||[];
-    stockLog = savedLog;
-    savedProducts.forEach(p=>addRowFromData(p,false));
-    updateSummary(); renderTransactionLog();
-});
+/* ------------------------------
+   SAVE + LOAD
+--------------------------------*/
 
-// IMAGE UPLOAD
-imageInput.addEventListener("change", function(){
-    const file = this.files[0]; if(!file) return;
-    const reader = new FileReader();
-    reader.onload=e=>selectedImage=e.target.result;
-    reader.readAsDataURL(file);
-});
-
-// ADD PRODUCT
-addBtn.addEventListener("click", function(){
-    const name = prompt("Product name:"); if(!name)return;
-    const category = prompt("Category:")||categoryOptions[0];
-    const size = prompt("Size:")||"";
-    const unit = prompt("Unit (SLABS/PIECE):")||unitOptions[0];
-    const supplier = prompt("Supplier:")||"";
-    const price = prompt("Unit price:")||"";
-    const stock = prompt("Stock quantity:")||"0";
-    const today = new Date().toLocaleDateString();
-    addRowFromData({name,category,size,unit,supplier,price,stock,image:selectedImage,updated:today},true);
-    selectedImage=""; imageInput.value="";
-});
-
-function addRowFromData(data,save=true){
-    const row = tableBody.insertRow();
-    row.insertCell(0).innerHTML = data.image ? `<img src="${data.image}" class="thumb" onclick="openImagePreview(this.src)">`:"No Image";
-    row.insertCell(1).innerHTML = `<span contenteditable="true">${data.name}</span>`;
-    row.insertCell(2).innerHTML = `<select class="category-select">${categoryOptions.map(o=>`<option value="${o}" ${o===data.category?"selected":""}>${o}</option>`).join("")}</select>`;
-    row.insertCell(3).innerHTML = `<span contenteditable="true">${data.size}</span>`;
-    row.insertCell(4).innerHTML = `<select class="unit-select">${unitOptions.map(o=>`<option value="${o}" ${o===data.unit?"selected":""}>${o}</option>`).join("")}</select>`;
-    row.insertCell(5).innerHTML = `<span contenteditable="true">${data.supplier}</span>`;
-    row.insertCell(6).innerHTML = `<span contenteditable="true">${data.price}</span>`;
-    row.insertCell(7).innerHTML = `<span contenteditable="true" data-old-stock="${data.stock}">${data.stock}</span>`;
-    row.insertCell(8).textContent = data.updated;
-    row.insertCell(9).innerHTML = `<button onclick="undoStock(this)">Undo</button>`;
-    row.insertCell(10).innerHTML = `<button onclick="deleteRow(this)">Delete</button>`;
-    if(save) saveProductsToLocal(); updateSummary();
+function saveData() {
+    localStorage.setItem("products", JSON.stringify(products));
+    localStorage.setItem("logs", JSON.stringify(logs));
 }
 
-// UNDO
-function undoStock(btn){
-    const row = btn.closest("tr");
-    const cell = row.cells[7].querySelector("span");
-    const oldStock = parseInt(cell.getAttribute("data-old-stock"))||0;
-    const currentStock = parseInt(cell.textContent)||0;
-    if(oldStock!==currentStock){
-        stockLog.push({productName:row.cells[1].textContent,oldStock:currentStock,newStock:oldStock,date:new Date().toLocaleString()});
-        cell.textContent=oldStock; row.cells[8].textContent=new Date().toLocaleDateString();
-        cell.setAttribute("data-old-stock",oldStock);
-        saveProductsToLocal(); saveLogToLocal(); updateSummary(); renderTransactionLog();
-        alert("Undo applied for this product only!");
-    } else alert("Nothing to undo!");
+function loadData() {
+    tableBody.innerHTML = "";
+    logBody.innerHTML = "";
+
+    products.forEach((p, index) => renderRow(p, index));
+    logs.forEach(log => renderLog(log));
+
+    updateSummary();
 }
 
-// PAGE SWITCH
-dashboardLink.addEventListener("click",()=>{
-    transactionPage.style.display="none";
-    mainPage.style.display="block";
-});
-logLink.addEventListener("click",()=>{
-    mainPage.style.display="none";
-    transactionPage.style.display="block";
-    renderTransactionLog();
-});
+/* ------------------------------
+   ADD PRODUCT
+--------------------------------*/
 
-// STOCK EDIT
-tableBody.addEventListener("input",e=>{
-    const cell=e.target,row=cell.closest("tr");
-    if(cell.parentElement.cellIndex===7){
-        const oldStock=parseInt(cell.getAttribute("data-old-stock"))||0,newStock=parseInt(cell.textContent)||0;
-        if(newStock!==oldStock){
-            stockLog.push({productName:row.cells[1].textContent,oldStock,newStock,date:new Date().toLocaleString()});
-            cell.setAttribute("data-old-stock",newStock);
-            row.cells[8].textContent=new Date().toLocaleDateString();
-            saveProductsToLocal(); saveLogToLocal(); updateSummary(); renderTransactionLog();
-        }
+function addProduct() {
+
+    let name = prompt("Product name:");
+    if (!name) return;
+
+    let categoryOptions = ["PATAGONIA QUARTZITE","QUARTZITE","ONYX","MARBLE","GRANITE","TRAVERTINE","LIMESTONE","CRAZY CUTS","COBBLESTONE"];
+    let unitOptions = ["SLABS","PIECE"];
+
+    let category = prompt("Category:\n" + categoryOptions.join("\n"));
+    let size = prompt("Size:");
+    let unit = prompt("Unit:\n" + unitOptions.join("\n"));
+    let supplier = prompt("Supplier:");
+    let price = prompt("Price:");
+    let stock = parseInt(prompt("Stock:")) || 0;
+
+    let today = new Date().toLocaleString();
+
+    let product = {
+        name, category, size, unit, supplier, price,
+        stock,
+        lastUpdated: today,
+        image: ""
+    };
+
+    products.push(product);
+    saveData();
+    loadData();
+}
+
+/* ------------------------------
+   RENDER ROW
+--------------------------------*/
+
+function renderRow(product, index) {
+
+    let row = tableBody.insertRow();
+
+    row.innerHTML = `
+        <td>
+            <img src="${product.image || ''}" class="thumb" data-index="${index}">
+            <input type="file" onchange="changeImage(event, ${index})">
+        </td>
+        <td contenteditable onblur="updateField(${index}, 'name', this.innerText)">${product.name}</td>
+        <td contenteditable onblur="updateField(${index}, 'category', this.innerText)">${product.category}</td>
+        <td contenteditable onblur="updateField(${index}, 'size', this.innerText)">${product.size}</td>
+        <td contenteditable onblur="updateField(${index}, 'unit', this.innerText)">${product.unit}</td>
+        <td contenteditable onblur="updateField(${index}, 'supplier', this.innerText)">${product.supplier}</td>
+        <td contenteditable onblur="updateField(${index}, 'price', this.innerText)">${product.price}</td>
+        <td contenteditable onblur="updateStock(${index}, this.innerText)">${product.stock}</td>
+        <td>${product.lastUpdated}</td>
+        <td><button onclick="deleteProduct(${index})">Delete</button></td>
+    `;
+
+    if (product.stock < 5) {
+        row.classList.add("low-stock");
     }
-    if(cell.tagName==="SPAN" && cell.contentEditable==="true") saveProductsToLocal();
-});
-
-// SAVE SELECT CHANGES
-tableBody.addEventListener("change",e=>{if(e.target.tagName==="SELECT") saveProductsToLocal();});
-
-// IMAGE PREVIEW
-function openImagePreview(src){ modalImg.src=src; modal.classList.add("show"); }
-modal.addEventListener("click",()=>modal.classList.remove("show"));
-document.addEventListener("keydown",e=>{if(e.key==="Escape") modal.classList.remove("show");});
-
-// DELETE ROW
-function deleteRow(btn){ btn.closest("tr").remove(); saveProductsToLocal(); updateSummary(); }
-
-// UPDATE SUMMARY
-function updateSummary(){
-    const rows=tableBody.querySelectorAll("tr"); totalProducts.textContent=rows.length;
-    let total=0; rows.forEach(r=>{
-        const stock=parseInt(r.cells[7].querySelector("span").textContent)||0;
-        total+=stock;
-        r.classList.toggle("low-stock",stock<5);
-    }); totalStock.textContent=total;
 }
 
-// SEARCH
-searchBox.addEventListener("keyup",function(){
-    const val=this.value.toLowerCase();
-    tableBody.querySelectorAll("tr").forEach(r=>{ r.style.display=r.textContent.toLowerCase().includes(val)?"":"none"; });
-});
+/* ------------------------------
+   UPDATE FIELD
+--------------------------------*/
 
-// SORT
-function sortTable(i){ Array.from(tableBody.rows).sort((a,b)=>a.cells[i].textContent.toLowerCase().localeCompare(b.cells[i].textContent.toLowerCase())).forEach(r=>tableBody.appendChild(r)); }
-
-// TRANSACTION LOG
-function renderTransactionLog(){
-    transactionBody.innerHTML="";
-    stockLog.forEach(tx=>{
-        const row=transactionBody.insertRow();
-        row.insertCell(0).textContent=tx.productName;
-        row.insertCell(1).textContent=tx.oldStock;
-        row.insertCell(2).textContent=tx.newStock;
-        row.insertCell(3).textContent=tx.date;
-    });
+function updateField(index, field, value) {
+    products[index][field] = value;
+    saveData();
 }
 
-// LOCAL STORAGE
-function saveProductsToLocal(){
-    const products=[];
-    tableBody.querySelectorAll("tr").forEach(r=>{
-        products.push({
-            name:r.cells[1].textContent,
-            category:r.cells[2].querySelector(".category-select")?.value||"",
-            size:r.cells[3].textContent,
-            unit:r.cells[4].querySelector(".unit-select")?.value||"",
-            supplier:r.cells[5].textContent,
-            price:r.cells[6].textContent,
-            stock:r.cells[7].querySelector("span").textContent,
-            image:r.cells[0].querySelector("img")?.src||"",
-            updated:r.cells[8].textContent
+/* ------------------------------
+   UPDATE STOCK + LOG
+--------------------------------*/
+
+function updateStock(index, value) {
+
+    let oldStock = products[index].stock;
+    let newStock = parseInt(value) || 0;
+
+    if (oldStock !== newStock) {
+
+        let date = new Date().toLocaleString();
+
+        products[index].stock = newStock;
+        products[index].lastUpdated = date;
+
+        logs.push({
+            name: products[index].name,
+            oldStock,
+            newStock,
+            date
         });
-    });
-    localStorage.setItem("products",JSON.stringify(products));
+
+        saveData();
+        loadData();
+    }
 }
-function saveLogToLocal(){ localStorage.setItem("stockLog",JSON.stringify(stockLog)); }
+
+/* ------------------------------
+   CHANGE IMAGE ANYTIME
+--------------------------------*/
+
+function changeImage(event, index) {
+
+    const file = event.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        products[index].image = e.target.result;
+        saveData();
+        loadData();
+    };
+    reader.readAsDataURL(file);
+}
+
+/* ------------------------------
+   DELETE
+--------------------------------*/
+
+function deleteProduct(index) {
+    products.splice(index, 1);
+    saveData();
+    loadData();
+}
+
+/* ------------------------------
+   SUMMARY
+--------------------------------*/
+
+function updateSummary() {
+    totalProducts.textContent = products.length;
+    totalStock.textContent = products.reduce((sum, p) => sum + p.stock, 0);
+}
+
+/* ------------------------------
+   TRANSACTION LOG
+--------------------------------*/
+
+function renderLog(log) {
+    let row = logBody.insertRow();
+    row.innerHTML = `
+        <td>${log.name}</td>
+        <td>${log.oldStock}</td>
+        <td>${log.newStock}</td>
+        <td>${log.date}</td>
+    `;
+}
+
+/* ------------------------------
+   NAVIGATION
+--------------------------------*/
+
+function showDashboard() {
+    document.getElementById("dashboardPage").style.display = "block";
+    document.getElementById("transactionPage").style.display = "none";
+}
+
+function showTransactions() {
+    document.getElementById("dashboardPage").style.display = "none";
+    document.getElementById("transactionPage").style.display = "block";
+}
+
+/* ------------------------------
+   IMAGE MODAL PREVIEW
+--------------------------------*/
+
+document.addEventListener("click", function(e) {
+    if (e.target.classList.contains("thumb") && e.target.src) {
+        document.getElementById("modalImage").src = e.target.src;
+        document.getElementById("imageModal").classList.add("show");
+    }
+});
+
+document.getElementById("imageModal").addEventListener("click", function() {
+    this.classList.remove("show");
+});
+
+/* ------------------------------
+   INITIAL LOAD
+--------------------------------*/
+
+loadData();
