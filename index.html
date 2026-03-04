@@ -29,7 +29,7 @@
             <h1>Inventory Dashboard</h1>
         </div>
 
-        <!-- CARDS -->
+        <!-- SUMMARY CARDS -->
         <div class="cards">
             <div class="card">
                 <h3>Total Products</h3>
@@ -45,7 +45,7 @@
         <div class="controls">
             <input type="text" id="searchBox" placeholder="Search products...">
             <input type="file" id="imageInput" accept="image/*">
-            <button onclick="addNewProduct()">+ Add Product</button>
+            <button id="addBtn">+ Add Product</button>
         </div>
 
         <!-- TABLE -->
@@ -60,7 +60,7 @@
                         <th onclick="sortTable(4)">Unit</th>
                         <th onclick="sortTable(5)">Supplier</th>
                         <th onclick="sortTable(6)">Unit Price</th>
-                        <th onclick="sortTable(7)">Current Stock</th>
+                        <th onclick="sortTable(7)">Stock</th>
                         <th onclick="sortTable(8)">Updated</th>
                         <th>Action</th>
                     </tr>
@@ -72,9 +72,9 @@
     </div>
 </div>
 
-<!-- IMAGE PREVIEW MODAL -->
+<!-- IMAGE MODAL -->
 <div id="imageModal" class="modal">
-    <img id="modalImage">
+    <img id="modalImage" alt="Preview">
 </div>
 
 <script src="script.js"></script>
