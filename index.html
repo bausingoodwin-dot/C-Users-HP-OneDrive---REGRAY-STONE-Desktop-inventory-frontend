@@ -1,68 +1,99 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Inventory System</title>
-    <link rel="stylesheet" href="style.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Inventory Dashboard</title>
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<!-- NAVIGATION -->
-<div class="navbar">
-    <button onclick="showDashboard()">Dashboard</button>
-    <button onclick="showTransactions()">Transaction Log</button>
-</div>
+<div class="dashboard">
 
-<!-- DASHBOARD PAGE -->
-<div id="dashboardPage">
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+    <h2>Inventory System</h2>
+    <ul>
+      <li id="dashboardLink">Dashboard</li>
+      <li id="logLink">Transaction Log</li>
+    </ul>
+  </div>
 
-    <h2>Inventory Dashboard</h2>
+  <!-- MAIN CONTENT -->
+  <div class="main">
 
-    <div class="summary">
-        <p>Total Products: <span id="totalProducts">0</span></p>
-        <p>Total Stock: <span id="totalStock">0</span></p>
+    <!-- DASHBOARD PAGE -->
+    <div id="dashboardPage">
+      <div class="header">
+        <h1>Inventory Dashboard</h1>
+      </div>
+
+      <!-- CARDS -->
+      <div class="cards">
+        <div class="card">
+          <h3>Total Products</h3>
+          <p id="totalProducts">0</p>
+        </div>
+        <div class="card">
+          <h3>Total Stock</h3>
+          <p id="totalStock">0</p>
+        </div>
+      </div>
+
+      <!-- CONTROLS -->
+      <div class="controls">
+        <input type="text" id="searchBox" placeholder="Search products...">
+        <button id="addBtn">+ Add Product</button>
+      </div>
+
+      <!-- TABLE -->
+      <div class="table-container">
+        <table id="inventoryTable">
+          <thead>
+            <tr>
+              <th>Image</th>
+              <th>Name</th>
+              <th>Category</th>
+              <th>Size</th>
+              <th>Unit</th>
+              <th>Supplier</th>
+              <th>Price</th>
+              <th>Stock</th>
+              <th>Last Updated</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
     </div>
 
-    <button onclick="addProduct()">Add Product</button>
-
-    <table id="inventoryTable">
-        <thead>
+    <!-- TRANSACTION LOG PAGE -->
+    <div id="transactionPage" style="display:none;">
+      <div class="header">
+        <h1>Transaction Log</h1>
+      </div>
+      <div class="table-container">
+        <table id="logTable">
+          <thead>
             <tr>
-                <th>Photo</th>
-                <th>Name</th>
-                <th>Category</th>
-                <th>Size</th>
-                <th>Unit</th>
-                <th>Supplier</th>
-                <th>Price</th>
-                <th>Stock</th>
-                <th>Last Updated</th>
-                <th>Action</th>
+              <th>Product</th>
+              <th>Old Stock</th>
+              <th>New Stock</th>
+              <th>Date</th>
             </tr>
-        </thead>
-        <tbody></tbody>
-    </table>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
 
+  </div>
 </div>
 
-<!-- TRANSACTION LOG PAGE -->
-<div id="transactionPage" style="display:none;">
-    <h2>Transaction Log</h2>
-    <table id="logTable">
-        <thead>
-            <tr>
-                <th>Product</th>
-                <th>Old Stock</th>
-                <th>New Stock</th>
-                <th>Date</th>
-            </tr>
-        </thead>
-        <tbody></tbody>
-    </table>
-</div>
-
-<!-- IMAGE PREVIEW MODAL -->
+<!-- IMAGE MODAL -->
 <div id="imageModal" class="modal">
-    <img id="modalImage">
+  <img id="modalImage">
 </div>
 
 <script src="script.js"></script>
