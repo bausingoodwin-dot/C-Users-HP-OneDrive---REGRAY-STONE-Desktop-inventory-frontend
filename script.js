@@ -38,27 +38,43 @@ addBtn.addEventListener("click", function () {
 
     let row = tableBody.insertRow();
 
-    row.innerHTML = `
-        <td>
-            ${selectedImage 
-                ? `<img src="${selectedImage}" class="thumb">`
-                : "No Image"}
-        </td>
-        <td contenteditable="true">${name}</td>
-        <td contenteditable="true">${category}</td>
-        <td contenteditable="true">${size}</td>
-        <td contenteditable="true">${unit}</td>
-        <td contenteditable="true">${supplier}</td>
-        <td contenteditable="true">${price}</td>
-        <td contenteditable="true">${stock}</td>
-        <td>${today}</td>
-        <td><button onclick="deleteRow(this)">Delete</button></td>
-    `;
+    // IMAGE CELL WITH CLICKABLE PREVIEW
+    let imgHTML = selectedImage 
+        ? `<img src="${selectedImage}" class="thumb" onclick="openImagePreview(this.src)">`
+        : "No Image";
 
+    row.insertCell(0).innerHTML = imgHTML;
+
+    row.insertCell(1).innerHTML = `<span contenteditable="true">${name}</span>`;
+    row.insertCell(2).innerHTML = `<span contenteditable="true">${category}</span>`;
+    row.insertCell(3).innerHTML = `<span contenteditable="true">${size}</span>`;
+    row.insertCell(4).innerHTML = `<span contenteditable="true">${unit}</span>`;
+    row.insertCell(5).innerHTML = `<span contenteditable="true">${supplier}</span>`;
+    row.insertCell(6).innerHTML = `<span contenteditable="true">${price}</span>`;
+    row.insertCell(7).innerHTML = `<span contenteditable="true">${stock}</span>`;
+    row.insertCell(8).innerHTML = today;
+    row.insertCell(9).innerHTML = `<button onclick="deleteRow(this)">Delete</button>`;
+
+    // RESET
     selectedImage = "";
     imageInput.value = "";
 
     updateSummary();
+});
+
+/* OPEN IMAGE PREVIEW */
+function openImagePreview(src) {
+    modalImg.src = src;
+    modal.classList.add("show");
+}
+
+/* CLOSE MODAL */
+modal.addEventListener("click", function () {
+    modal.classList.remove("show");
+});
+
+document.addEventListener("keydown", function (e) {
+    if (e.key === "Escape") modal.classList.remove("show");
 });
 
 /* DELETE */
@@ -73,16 +89,11 @@ function updateSummary() {
     totalProducts.textContent = rows.length;
 
     let total = 0;
-
     rows.forEach(row => {
         let stock = parseInt(row.cells[7].textContent) || 0;
         total += stock;
-
-        if (stock < 5) {
-            row.classList.add("low-stock");
-        } else {
-            row.classList.remove("low-stock");
-        }
+        if (stock < 5) row.classList.add("low-stock");
+        else row.classList.remove("low-stock");
     });
 
     totalStock.textContent = total;
@@ -112,23 +123,3 @@ function sortTable(index) {
 
     rows.forEach(row => tableBody.appendChild(row));
 }
-
-/* IMAGE CLICK PREVIEW */
-document.addEventListener("click", function (e) {
-    if (e.target.classList.contains("thumb")) {
-        modalImg.src = e.target.src;
-        modal.classList.add("show");
-    }
-});
-
-/* CLOSE MODAL */
-modal.addEventListener("click", function () {
-    modal.classList.remove("show");
-});
-
-/* ESC CLOSE */
-document.addEventListener("keydown", function (e) {
-    if (e.key === "Escape") {
-        modal.classList.remove("show");
-    }
-});
