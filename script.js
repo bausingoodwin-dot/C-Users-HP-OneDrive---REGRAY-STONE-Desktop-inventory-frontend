@@ -216,3 +216,11 @@ function renderChart(){
 
 // --- INITIAL RENDER ---
 renderInventory();
+document.getElementById("logoutBtn").onclick = function(){
+
+localStorage.removeItem("loggedIn");
+
+window.location.href = "login.html";
+
+}
+
