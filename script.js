@@ -1,219 +1,105 @@
-let products = JSON.parse(localStorage.getItem("inventory")) || [];
+let products = [];
 
-// Elements
-const addProductForm = document.getElementById("addProductForm");
-const productSelect = document.getElementById("product");
-const categoryInput = document.getElementById("category");
-const inventoryTable = document.getElementById("inventoryTable");
-const totalProducts = document.getElementById("totalProducts");
-const totalStocks = document.getElementById("totalStocks");
-const searchInput = document.getElementById("search");
-const quantityInput = document.getElementById("quantity");
+function addProduct(){
 
-// Save Data
-function saveData() {
-    localStorage.setItem("inventory", JSON.stringify(products));
+let name = document.getElementById("productName").value;
+let stock = document.getElementById("productStock").value;
+let imageInput = document.getElementById("productImage");
+
+if(name === "" || stock === ""){
+alert("Please fill all fields");
+return;
 }
 
-// Update Summary
-function updateSummary() {
-    totalProducts.textContent = products.length;
-    totalStocks.textContent = products.reduce((sum, p) => sum + p.quantity, 0);
+let imageURL = "";
+
+if(imageInput.files[0]){
+imageURL = URL.createObjectURL(imageInput.files[0]);
 }
 
-// Render Products
-function renderProducts(filter = "") {
-    inventoryTable.innerHTML = "";
-    productSelect.innerHTML = "<option value=''>Select Product</option>";
+let product = {
+name:name,
+stock:stock,
+image:imageURL
+};
 
-    products.forEach((product, index) => {
-        if (!product.name.toLowerCase().includes(filter.toLowerCase())) return;
+products.push(product);
 
-        const option = document.createElement("option");
-        option.value = index;
-        option.textContent = product.name;
-        productSelect.appendChild(option);
+displayProducts();
 
-        const row = document.createElement("tr");
-
-        row.innerHTML = `
-            <td><img src="${product.image}" style="cursor:pointer"></td>
-            <td>${product.name}</td>
-            <td>${product.category}</td>
-            <td>${product.quantity}</td>
-            <td>${product.lastUpdated || "-"}</td>
-            <td><button class="delete-btn">Delete</button></td>
-        `;
-
-        row.querySelector(".delete-btn").addEventListener("click", () => {
-            if (confirm("Delete this product?")) {
-                products.splice(index, 1);
-                saveData();
-                renderProducts(searchInput.value);
-            }
-        });
-
-        row.querySelector("img").addEventListener("click", () => {
-            previewImage(product.image);
-        });
-
-        inventoryTable.appendChild(row);
-    });
-
-    updateSummary();
+document.getElementById("productName").value="";
+document.getElementById("productStock").value="";
+imageInput.value="";
 }
 
-// Add Product (bulletproof)
-addProductForm.addEventListener("submit", function(e) {
-    e.preventDefault();
 
-    const name = document.getElementById("newProductName").value.trim();
-    const category = document.getElementById("newProductCategory").value.trim();
-    const imageInput = document.getElementById("newProductImage");
-    const imageFile = imageInput.files[0];
+function displayProducts(){
 
-    if (!name || !category) {
-        alert("Please fill in product name and category.");
-        return;
-    }
+let table = document.getElementById("productTable");
+table.innerHTML="";
 
-    // If no file selected, use placeholder
-    if (!imageFile) {
-        addProduct(name, category, "https://via.placeholder.com/150");
-        return;
-    }
+products.forEach((item,index)=>{
 
-    // Try reading file
-    try {
-        const reader = new FileReader();
+let row = `
+<tr>
 
-        reader.onload = function() {
-            addProduct(name, category, reader.result);
-        };
+<td>
+<img src="${item.image}" class="product-img" onclick="previewImage('${item.image}')">
+</td>
 
-        reader.onerror = function() {
-            console.warn("FileReader failed, using placeholder image.");
-            addProduct(name, category, "https://via.placeholder.com/150");
-        };
+<td>${item.name}</td>
 
-        reader.readAsDataURL(imageFile);
-    } catch (err) {
-        console.warn("FileReader not supported, using placeholder image.");
-        addProduct(name, category, "https://via.placeholder.com/150");
-    }
+<td>${item.stock}</td>
+
+<td>
+
+<button onclick="editStock(${index})">Edit</button>
+
+<button onclick="deleteProduct(${index})">Delete</button>
+
+</td>
+
+</tr>
+`;
+
+table.innerHTML += row;
+
 });
 
-// Helper function to push product
-function addProduct(name, category, image) {
-    products.push({
-        name,
-        category,
-        quantity: 0,
-        image,
-        lastUpdated: "-"
-    });
-
-    saveData();
-    renderProducts(searchInput.value);
-    addProductForm.reset();
 }
 
-// Update category on select
-productSelect.addEventListener("change", function() {
-    const index = this.value;
-    categoryInput.value = index !== "" ? products[index].category : "";
-});
 
-// Stock In
-document.getElementById("stockInBtn").addEventListener("click", function() {
-    const index = productSelect.value;
-    const qty = parseInt(quantityInput.value);
+function deleteProduct(index){
 
-    if (index === "" || !qty || qty <= 0) {
-        alert("Select product and enter valid quantity.");
-        return;
-    }
+products.splice(index,1);
+displayProducts();
 
-    products[index].quantity += qty;
-    products[index].lastUpdated = new Date().toLocaleString();
-
-    saveData();
-    renderProducts(searchInput.value);
-    quantityInput.value = "";
-});
-
-// Stock Out
-document.getElementById("stockOutBtn").addEventListener("click", function() {
-    const index = productSelect.value;
-    const qty = parseInt(quantityInput.value);
-
-    if (index === "" || !qty || qty <= 0) {
-        alert("Select product and enter valid quantity.");
-        return;
-    }
-
-    if (products[index].quantity < qty) {
-        alert("Not enough stock!");
-        return;
-    }
-
-    products[index].quantity -= qty;
-    products[index].lastUpdated = new Date().toLocaleString();
-
-    saveData();
-    renderProducts(searchInput.value);
-    quantityInput.value = "";
-});
-
-// Search
-searchInput.addEventListener("input", function() {
-    renderProducts(this.value);
-});
-
-// Export CSV
-document.getElementById("exportBtn").addEventListener("click", function() {
-    let csv = "Product,Category,Quantity,Last Updated\n";
-
-    products.forEach(p => {
-        csv += `"${p.name}","${p.category}",${p.quantity},"${p.lastUpdated}"\n`;
-    });
-
-    const blob = new Blob([csv], { type: "text/csv" });
-    const url = URL.createObjectURL(blob);
-
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = "inventory.csv";
-    a.click();
-});
-
-// Image Preview
-function previewImage(src) {
-    const overlay = document.createElement("div");
-    overlay.style.position = "fixed";
-    overlay.style.top = 0;
-    overlay.style.left = 0;
-    overlay.style.width = "100%";
-    overlay.style.height = "100%";
-    overlay.style.background = "rgba(0,0,0,0.8)";
-    overlay.style.display = "flex";
-    overlay.style.justifyContent = "center";
-    overlay.style.alignItems = "center";
-    overlay.style.zIndex = 9999;
-
-    overlay.addEventListener("click", () => {
-        document.body.removeChild(overlay);
-    });
-
-    const img = document.createElement("img");
-    img.src = src;
-    img.style.maxWidth = "80%";
-    img.style.maxHeight = "80%";
-    img.style.borderRadius = "10px";
-
-    overlay.appendChild(img);
-    document.body.appendChild(overlay);
 }
 
-// Initial Load
-renderProducts();
+
+function editStock(index){
+
+let newStock = prompt("Enter new stock:");
+
+if(newStock !== null){
+products[index].stock = newStock;
+displayProducts();
+}
+
+}
+
+
+function previewImage(src){
+
+let modal = document.getElementById("previewModal");
+let image = document.getElementById("previewImage");
+
+modal.style.display="block";
+image.src = src;
+
+}
+
+
+function closePreview(){
+document.getElementById("previewModal").style.display="none";
+}
