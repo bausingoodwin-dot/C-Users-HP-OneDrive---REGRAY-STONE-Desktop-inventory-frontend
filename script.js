@@ -44,26 +44,21 @@ function renderInventory() {
         stockCount += p.quantity;
 
         // Product Select
-        let option = document.createElement("option");
+        const option = document.createElement("option");
         option.value = i;
         option.textContent = p.name;
         productSelect.appendChild(option);
 
         // Table Row
-        let row = document.createElement("tr");
+        const row = document.createElement("tr");
         row.innerHTML = `
             <td>${p.image ? `<img src="${p.image}" width="60" style="cursor:pointer" onclick="previewImage('${p.image}')">` : "-"}</td>
             <td>${p.name}</td>
             <td>${p.category}</td>
-            <td style="color:${p.quantity<5?'red':'black'}">${p.quantity} ${p.quantity<5?"(LOW)":""}</td>
+            <td style="color:${p.quantity<5?'red':'black'}">${p.quantity}${p.quantity<5?" (LOW)":""}</td>
             <td><button onclick="deleteProduct(${i})">Delete</button></td>
         `;
         inventoryTable.appendChild(row);
-
-        // Low Stock Notification
-        if(p.quantity>0 && p.quantity < 5){
-            alert(`⚠ Low Stock: ${p.name} only ${p.quantity} left!`);
-        }
     });
 
     totalProducts.textContent = products.length;
@@ -77,7 +72,7 @@ function renderInventory() {
 function renderHistory() {
     historyTable.innerHTML = "";
     history.forEach(h => {
-        let row = document.createElement("tr");
+        const row = document.createElement("tr");
         row.innerHTML = `<td>${h.date}</td><td>${h.product}</td><td>${h.type}</td><td>${h.qty}</td>`;
         historyTable.appendChild(row);
     });
@@ -121,7 +116,8 @@ document.getElementById("stockInBtn").onclick = function(){
     if(index === "" || !qty) return;
     products[index].quantity += qty;
     history.push({date:new Date().toLocaleString(), product:products[index].name, type:"IN", qty});
-    saveData(); renderInventory();
+    saveData(); 
+    renderInventory();
     document.getElementById("stockQty").value = "";
 }
 
@@ -133,7 +129,8 @@ document.getElementById("stockOutBtn").onclick = function(){
     if(products[index].quantity < qty){ alert("Not enough stock"); return; }
     products[index].quantity -= qty;
     history.push({date:new Date().toLocaleString(), product:products[index].name, type:"OUT", qty});
-    saveData(); renderInventory();
+    saveData(); 
+    renderInventory();
     document.getElementById("stockQty").value = "";
 }
 
