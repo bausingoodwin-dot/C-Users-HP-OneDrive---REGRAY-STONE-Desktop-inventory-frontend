@@ -1,93 +1,44 @@
-let inventory = JSON.parse(localStorage.getItem("inventory")) || [];
+let products = JSON.parse(localStorage.getItem("products")) || [];
+
+let history = JSON.parse(localStorage.getItem("history")) || [];
 
 const table = document.getElementById("inventoryTable");
-const totalProducts = document.getElementById("totalProducts");
-const totalStock = document.getElementById("totalStock");
+const historyTable = document.getElementById("historyTable");
+const productSelect = document.getElementById("productSelect");
 
-const addBtn = document.getElementById("stockInBtn");
+function saveData(){
 
-addBtn.addEventListener("click", addProduct);
-
-function addProduct(){
-
-let name = document.getElementById("productName").value;
-let qty = parseInt(document.getElementById("productQty").value);
-let imageInput = document.getElementById("productImage");
-
-if(name === "" || isNaN(qty)){
-alert("Fill product name and quantity");
-return;
-}
-
-let image = "";
-
-if(imageInput.files[0]){
-
-let reader = new FileReader();
-
-reader.onload = function(e){
-
-image = e.target.result;
-
-saveProduct(name, qty, image);
-
-};
-
-reader.readAsDataURL(imageInput.files[0]);
-
-}else{
-
-saveProduct(name, qty, image);
+localStorage.setItem("products", JSON.stringify(products));
+localStorage.setItem("history", JSON.stringify(history));
 
 }
 
-}
-
-function saveProduct(name, qty, image){
-
-inventory.push({
-name:name,
-qty:qty,
-image:image
-});
-
-localStorage.setItem("inventory", JSON.stringify(inventory));
-
-displayProducts();
-
-clearForm();
-
-}
-
-function displayProducts(){
+function render(){
 
 table.innerHTML = "";
+productSelect.innerHTML = '<option value="">Select Product</option>';
 
-let stockTotal = 0;
+let totalStock = 0;
 
-inventory.forEach((item,index)=>{
+products.forEach((p,i)=>{
 
-stockTotal += item.qty;
+totalStock += p.qty;
+
+let option = `<option value="${i}">${p.name}</option>`;
+productSelect.innerHTML += option;
 
 let row = `
 
 <tr>
 
-<td>
-<img src="${item.image}" width="60" onclick="previewImage('${item.image}')">
-</td>
-
-<td>${item.name}</td>
-
-<td>${item.qty}</td>
+<td><img src="${p.image}" width="50"></td>
+<td>${p.name}</td>
+<td>${p.category}</td>
+<td>${p.qty}</td>
 
 <td>
 
-<button onclick="stockIn(${index})">+</button>
-
-<button onclick="stockOut(${index})">-</button>
-
-<button onclick="deleteProduct(${index})" class="delete-btn">Delete</button>
+<button onclick="deleteProduct(${i})">Delete</button>
 
 </td>
 
@@ -99,87 +50,184 @@ table.innerHTML += row;
 
 });
 
-totalProducts.innerText = inventory.length;
+document.getElementById("totalProducts").innerText = products.length;
+document.getElementById("totalStocks").innerText = totalStock;
 
-totalStock.innerText = stockTotal;
+renderHistory();
 
 }
 
-function stockIn(index){
+function renderHistory(){
 
-inventory[index].qty++;
+historyTable.innerHTML="";
+
+history.forEach(h=>{
+
+let row = `
+
+<tr>
+
+<td>${h.date}</td>
+<td>${h.product}</td>
+<td>${h.type}</td>
+<td>${h.qty}</td>
+
+</tr>
+
+`;
+
+historyTable.innerHTML += row;
+
+});
+
+}
+
+
+document.getElementById("addProductForm").addEventListener("submit",function(e){
+
+e.preventDefault();
+
+let name=document.getElementById("name").value;
+let category=document.getElementById("category").value;
+let qty=parseInt(document.getElementById("quantity").value);
+let imageInput=document.getElementById("image");
+
+let image="";
+
+if(imageInput.files[0]){
+
+let reader=new FileReader();
+
+reader.onload=function(e){
+
+image=e.target.result;
+
+products.push({name,category,qty,image});
 
 saveData();
-
-}
-
-function stockOut(index){
-
-if(inventory[index].qty > 0){
-
-inventory[index].qty--;
-
-saveData();
-
-}
-
-}
-
-function deleteProduct(index){
-
-inventory.splice(index,1);
-
-saveData();
-
-}
-
-function saveData(){
-
-localStorage.setItem("inventory", JSON.stringify(inventory));
-
-displayProducts();
-
-}
-
-function clearForm(){
-
-document.getElementById("productName").value = "";
-document.getElementById("productQty").value = "";
-document.getElementById("productImage").value = "";
-
-}
-
-function previewImage(src){
-
-if(src === "") return;
-
-document.getElementById("imagePreview").style.display = "block";
-
-document.getElementById("previewImg").src = src;
-
-}
-
-document.getElementById("closePreview").onclick = function(){
-
-document.getElementById("imagePreview").style.display = "none";
+render();
 
 };
 
-displayProducts();
+reader.readAsDataURL(imageInput.files[0]);
+
+}else{
+
+products.push({name,category,qty,image});
+
+saveData();
+render();
+
+}
+
+this.reset();
+
+});
 
 
-document.getElementById("searchInput").addEventListener("keyup", function(){
+document.getElementById("stockInBtn").onclick=function(){
 
-let value = this.value.toLowerCase();
+let index=productSelect.value;
+let qty=parseInt(document.getElementById("stockQty").value);
 
-let rows = table.getElementsByTagName("tr");
+if(index===""||!qty) return;
+
+products[index].qty+=qty;
+
+history.push({
+
+date:new Date().toLocaleString(),
+product:products[index].name,
+type:"IN",
+qty
+
+});
+
+saveData();
+render();
+
+}
+
+
+document.getElementById("stockOutBtn").onclick=function(){
+
+let index=productSelect.value;
+let qty=parseInt(document.getElementById("stockQty").value);
+
+if(index===""||!qty) return;
+
+if(products[index].qty<qty){
+
+alert("Not enough stock");
+return;
+
+}
+
+products[index].qty-=qty;
+
+history.push({
+
+date:new Date().toLocaleString(),
+product:products[index].name,
+type:"OUT",
+qty
+
+});
+
+saveData();
+render();
+
+}
+
+
+function deleteProduct(i){
+
+if(confirm("Delete product?")){
+
+products.splice(i,1);
+
+saveData();
+render();
+
+}
+
+}
+
+
+document.getElementById("search").addEventListener("input",function(){
+
+let value=this.value.toLowerCase();
+
+let rows=table.getElementsByTagName("tr");
 
 for(let i=0;i<rows.length;i++){
 
-let text = rows[i].innerText.toLowerCase();
-
-rows[i].style.display = text.includes(value) ? "" : "none";
+rows[i].style.display = rows[i].innerText.toLowerCase().includes(value) ? "" : "none";
 
 }
 
 });
+
+
+document.getElementById("exportBtn").onclick=function(){
+
+let csv="Product,Category,Stock\n";
+
+products.forEach(p=>{
+
+csv+=`${p.name},${p.category},${p.qty}\n`;
+
+});
+
+let blob=new Blob([csv]);
+
+let a=document.createElement("a");
+
+a.href=URL.createObjectURL(blob);
+a.download="inventory.csv";
+
+a.click();
+
+};
+
+render();
