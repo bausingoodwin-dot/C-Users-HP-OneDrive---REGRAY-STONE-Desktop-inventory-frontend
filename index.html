@@ -3,133 +3,27 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Regray Stone & Furniture Inventory System </title>
-<link rel="stylesheet" href="style.css">
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<title>Admin Login | Regray Inventory</title>
+<link rel="stylesheet" href="login.css">
 </head>
+
 <body>
 
-<div class="wrapper">
-  <nav class="sidebar">
-    <h2>Inventory System</h2>
-    <ul>
-      <li><button id="dashboardBtn" class="nav-btn active">Dashboard</button></li>
-      <li><button id="transactionsBtn" class="nav-btn">Transactions</button></li>
-      <li><button id="chartBtn" class="nav-btn">Stock Chart</button></li>
-    </ul>
-  </nav>
+<div class="login-box">
+<h2>Admin Login</h2>
 
-  <main class="main-content">
-    <header>
-      <h1>Regray Stone & Furniture</h1>
-    </header>
+<form id="loginForm">
+<input type="text" id="username" placeholder="Username" required>
+<input type="password" id="password" placeholder="Password" required>
 
-    <!-- DASHBOARD -->
-    <section id="dashboardSection">
-      <div class="summary">
-        <div class="card">
-          <h3>Total Products</h3>
-          <p id="totalProducts">0</p>
-        </div>
-        <div class="card">
-          <h3>Total Stocks</h3>
-          <p id="totalStocks">0</p>
-        </div>
-      </div>
+<button type="submit">Login</button>
 
-      <section class="form-section">
-        <h2>Add New Product</h2>
-        <form id="addProductForm">
-          <input type="text" id="name" placeholder="Product Name" required>
-          <select id="category" required>
-            <option value="">Select Category</option>
-            <option>PATAGONIA</option>
-            <option>QUARTZITE</option>
-            <option>ONYX</option>
-            <option>MARBLE</option>
-            <option>TRAVERTINE</option>
-            <option>LIMESTONE</option>
-            <option>GRANITE</option>
-            <option>CRAZY CUT</option>
-            <option>COBBLESTONE</option>
-          </select>
-          <input type="number" id="quantity" placeholder="Quantity" required>
-          <input type="file" id="image">
-          <button type="submit">Add Product</button>
-        </form>
-      </section>
+<p id="error"></p>
+</form>
 
-      <section class="form-section">
-        <h2>Stock Management</h2>
-        <select id="productSelect"><option value="">Select Product</option></select>
-        <input type="number" id="stockQty" placeholder="Quantity">
-        <button id="stockInBtn">Stock In</button>
-        <button id="stockOutBtn">Stock Out</button>
-      </section>
-
-      <section class="search-filter">
-        <input type="text" id="search" placeholder="Search product">
-        <select id="categoryFilter">
-          <option value="">All Categories</option>
-          <option>PATAGONIA</option>
-          <option>QUARTZITE</option>
-          <option>ONYX</option>
-          <option>MARBLE</option>
-          <option>TRAVERTINE</option>
-          <option>LIMESTONE</option>
-          <option>GRANITE</option>
-          <option>CRAZY CUT</option>
-          <option>COBBLESTONE</option>
-        </select>
-      </section>
-
-      <section class="table-section">
-        <h2>Inventory</h2>
-        <table>
-          <thead>
-            <tr>
-              <th>Image</th>
-              <th>Product</th>
-              <th>Category</th>
-              <th>Stock</th>
-              <th>Action</th>
-            </tr>
-          </thead>
-          <tbody id="inventoryTable"></tbody>
-        </table>
-      </section>
-
-      <button id="exportInventoryBtn">Export Inventory CSV</button>
-    </section>
-
-    <!-- STOCK CHART -->
-    <section id="chartSection" style="display:none">
-      <h2>Stock per Category</h2>
-      <canvas id="categoryChart"></canvas>
-    </section>
-
-    <!-- TRANSACTIONS -->
-    <section id="transactionsSection" style="display:none">
-      <h2>Transactions</h2>
-      <table>
-        <thead>
-          <tr>
-            <th>Date</th>
-            <th>Product</th>
-            <th>Type</th>
-            <th>Quantity</th>
-          </tr>
-        </thead>
-        <tbody id="historyTable"></tbody>
-      </table>
-      <button id="exportTransactionsBtn">Export Transactions CSV</button>
-    </section>
-
-  </main>
 </div>
 
-<script src="script.js"></script>
+<script src="login.js"></script>
+
 </body>
 </html>
-
-
