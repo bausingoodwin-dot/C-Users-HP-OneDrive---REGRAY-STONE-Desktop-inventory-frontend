@@ -1,105 +1,185 @@
-let products = [];
+let inventory = JSON.parse(localStorage.getItem("inventory")) || [];
+
+const table = document.getElementById("inventoryTable");
+const totalProducts = document.getElementById("totalProducts");
+const totalStock = document.getElementById("totalStock");
+
+const addBtn = document.getElementById("stockInBtn");
+
+addBtn.addEventListener("click", addProduct);
 
 function addProduct(){
 
 let name = document.getElementById("productName").value;
-let stock = document.getElementById("productStock").value;
+let qty = parseInt(document.getElementById("productQty").value);
 let imageInput = document.getElementById("productImage");
 
-if(name === "" || stock === ""){
-alert("Please fill all fields");
+if(name === "" || isNaN(qty)){
+alert("Fill product name and quantity");
 return;
 }
 
-let imageURL = "";
+let image = "";
 
 if(imageInput.files[0]){
-imageURL = URL.createObjectURL(imageInput.files[0]);
-}
 
-let product = {
-name:name,
-stock:stock,
-image:imageURL
+let reader = new FileReader();
+
+reader.onload = function(e){
+
+image = e.target.result;
+
+saveProduct(name, qty, image);
+
 };
 
-products.push(product);
+reader.readAsDataURL(imageInput.files[0]);
+
+}else{
+
+saveProduct(name, qty, image);
+
+}
+
+}
+
+function saveProduct(name, qty, image){
+
+inventory.push({
+name:name,
+qty:qty,
+image:image
+});
+
+localStorage.setItem("inventory", JSON.stringify(inventory));
 
 displayProducts();
 
-document.getElementById("productName").value="";
-document.getElementById("productStock").value="";
-imageInput.value="";
-}
+clearForm();
 
+}
 
 function displayProducts(){
 
-let table = document.getElementById("productTable");
-table.innerHTML="";
+table.innerHTML = "";
 
-products.forEach((item,index)=>{
+let stockTotal = 0;
+
+inventory.forEach((item,index)=>{
+
+stockTotal += item.qty;
 
 let row = `
+
 <tr>
 
 <td>
-<img src="${item.image}" class="product-img" onclick="previewImage('${item.image}')">
+<img src="${item.image}" width="60" onclick="previewImage('${item.image}')">
 </td>
 
 <td>${item.name}</td>
 
-<td>${item.stock}</td>
+<td>${item.qty}</td>
 
 <td>
 
-<button onclick="editStock(${index})">Edit</button>
+<button onclick="stockIn(${index})">+</button>
 
-<button onclick="deleteProduct(${index})">Delete</button>
+<button onclick="stockOut(${index})">-</button>
+
+<button onclick="deleteProduct(${index})" class="delete-btn">Delete</button>
 
 </td>
 
 </tr>
+
 `;
 
 table.innerHTML += row;
 
 });
 
+totalProducts.innerText = inventory.length;
+
+totalStock.innerText = stockTotal;
+
 }
 
+function stockIn(index){
+
+inventory[index].qty++;
+
+saveData();
+
+}
+
+function stockOut(index){
+
+if(inventory[index].qty > 0){
+
+inventory[index].qty--;
+
+saveData();
+
+}
+
+}
 
 function deleteProduct(index){
 
-products.splice(index,1);
+inventory.splice(index,1);
+
+saveData();
+
+}
+
+function saveData(){
+
+localStorage.setItem("inventory", JSON.stringify(inventory));
+
 displayProducts();
 
 }
 
+function clearForm(){
 
-function editStock(index){
-
-let newStock = prompt("Enter new stock:");
-
-if(newStock !== null){
-products[index].stock = newStock;
-displayProducts();
-}
+document.getElementById("productName").value = "";
+document.getElementById("productQty").value = "";
+document.getElementById("productImage").value = "";
 
 }
-
 
 function previewImage(src){
 
-let modal = document.getElementById("previewModal");
-let image = document.getElementById("previewImage");
+if(src === "") return;
 
-modal.style.display="block";
-image.src = src;
+document.getElementById("imagePreview").style.display = "block";
+
+document.getElementById("previewImg").src = src;
 
 }
 
+document.getElementById("closePreview").onclick = function(){
 
-function closePreview(){
-document.getElementById("previewModal").style.display="none";
+document.getElementById("imagePreview").style.display = "none";
+
+};
+
+displayProducts();
+
+
+document.getElementById("searchInput").addEventListener("keyup", function(){
+
+let value = this.value.toLowerCase();
+
+let rows = table.getElementsByTagName("tr");
+
+for(let i=0;i<rows.length;i++){
+
+let text = rows[i].innerText.toLowerCase();
+
+rows[i].style.display = text.includes(value) ? "" : "none";
+
 }
+
+});
