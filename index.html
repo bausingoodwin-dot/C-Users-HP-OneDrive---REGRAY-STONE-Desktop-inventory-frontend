@@ -15,6 +15,7 @@
     <ul>
       <li><button id="dashboardBtn" class="nav-btn active">Dashboard</button></li>
       <li><button id="transactionsBtn" class="nav-btn">Transactions</button></li>
+      <li><button id="chartBtn" class="nav-btn">Stock Chart</button></li>
     </ul>
   </nav>
 
@@ -98,11 +99,13 @@
         </table>
       </section>
 
-      <section class="chart-section">
-        <canvas id="categoryChart"></canvas>
-      </section>
-
       <button id="exportInventoryBtn">Export Inventory CSV</button>
+    </section>
+
+    <!-- STOCK CHART -->
+    <section id="chartSection" style="display:none">
+      <h2>Stock per Category</h2>
+      <canvas id="categoryChart"></canvas>
     </section>
 
     <!-- TRANSACTIONS -->
