@@ -1,147 +1,279 @@
-/* ===================================== */
-/* IMAGE PREVIEW MODAL (CLICK PRODUCT IMAGE) */
-/* ===================================== */
-
-.image-modal{
-position:fixed;
-top:0;
-left:0;
-width:100%;
-height:100%;
-background:rgba(0,0,0,0.8);
-display:flex;
-justify-content:center;
-align-items:center;
-z-index:999;
-visibility:hidden;
-opacity:0;
-transition:0.3s;
+/* RESET & BASE */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+    transition: all 0.3s ease;
 }
 
-.image-modal.active{
-visibility:visible;
-opacity:1;
+body {
+    background: #e0e5ec;
+    color: #333;
 }
 
-.image-modal img{
-max-width:80%;
-max-height:80%;
-border-radius:12px;
-box-shadow:0 20px 50px rgba(0,0,0,0.6);
-animation:zoomImage 0.3s ease;
+/* WRAPPER */
+.wrapper {
+    display: flex;
+    min-height: 100vh;
+    overflow-x: hidden;
 }
 
-@keyframes zoomImage{
-from{transform:scale(0.7)}
-to{transform:scale(1)}
+/* SIDEBAR */
+.sidebar {
+    width: 240px;
+    background: linear-gradient(180deg, #1e3c72, #2a5298);
+    color: #fff;
+    padding: 30px 20px;
+    flex-shrink: 0;
+    position: sticky;
+    top: 0;
+    height: 100vh;
 }
 
-
-/* ===================================== */
-/* CUSTOM SCROLLBAR */
-/* ===================================== */
-
-::-webkit-scrollbar{
-width:10px;
+.sidebar h2 {
+    margin-bottom: 40px;
+    font-size: 22px;
+    font-weight: 600;
+    text-align: center;
+    letter-spacing: 1px;
 }
 
-::-webkit-scrollbar-track{
-background:#e0e5ec;
+.sidebar ul {
+    list-style: none;
 }
 
-::-webkit-scrollbar-thumb{
-background:linear-gradient(#1e3c72,#2a5298);
-border-radius:10px;
+.sidebar ul li {
+    margin-bottom: 20px;
 }
 
-::-webkit-scrollbar-thumb:hover{
-background:#1e3c72;
+.sidebar ul li button {
+    width: 100%;
+    padding: 12px 20px;
+    border: none;
+    background: rgba(255,255,255,0.05);
+    color: #fff;
+    cursor: pointer;
+    text-align: left;
+    border-radius: 10px;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+    box-shadow: inset 0 0 0 rgba(255,255,255,0.1);
 }
 
-
-/* ===================================== */
-/* PAGE FADE ANIMATION */
-/* ===================================== */
-
-.main-content{
-animation:fadePage 0.6s ease;
+.sidebar ul li button.active,
+.sidebar ul li button:hover {
+    background: rgba(255,255,255,0.2);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
 }
 
-@keyframes fadePage{
-from{
-opacity:0;
-transform:translateY(10px);
-}
-to{
-opacity:1;
-transform:translateY(0);
-}
+/* MAIN CONTENT */
+.main-content {
+    flex: 1;
+    padding: 25px 35px;
 }
 
-
-/* ===================================== */
-/* TABLE ROW HOVER EFFECT */
-/* ===================================== */
-
-table tbody tr{
-transition:0.2s;
+/* HEADER */
+header {
+    margin-bottom: 30px;
 }
 
-table tbody tr:hover{
-background:rgba(30,60,114,0.08);
-transform:scale(1.01);
+header h1 {
+    font-size: 32px;
+    color: #1e3c72;
+    font-weight: 700;
 }
 
-
-/* ===================================== */
-/* INPUT FOCUS EFFECT */
-/* ===================================== */
-
-input:focus,
-select:focus{
-outline:none;
-border:1px solid #1e3c72;
-box-shadow:0 0 8px rgba(30,60,114,0.3);
+/* SUMMARY CARDS */
+.summary {
+    display: flex;
+    gap: 25px;
+    margin-bottom: 30px;
+    flex-wrap: wrap;
 }
 
-
-/* ===================================== */
-/* SIDEBAR BUTTON ICON STYLE (FUTURE READY) */
-/* ===================================== */
-
-.sidebar ul li button{
-display:flex;
-align-items:center;
-gap:10px;
+.card {
+    flex: 1;
+    background: rgba(255, 255, 255, 0.25);
+    backdrop-filter: blur(12px);
+    padding: 25px;
+    border-radius: 20px;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+    text-align: center;
+    cursor: default;
+    border: 1px solid rgba(255,255,255,0.2);
 }
 
-
-/* ===================================== */
-/* BUTTON PRESS EFFECT */
-/* ===================================== */
-
-button:active{
-transform:scale(0.95);
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 35px rgba(0,0,0,0.15);
 }
 
-
-/* ===================================== */
-/* MOBILE IMPROVEMENT */
-/* ===================================== */
-
-@media(max-width:600px){
-
-header h1{
-font-size:22px;
+.card h3 {
+    font-size: 18px;
+    margin-bottom: 12px;
+    letter-spacing: 0.5px;
 }
 
-.card p{
-font-size:22px;
+.card p {
+    font-size: 28px;
+    font-weight: 700;
+    color: #1e3c72;
 }
 
-table th, table td{
-font-size:12px;
-padding:8px;
+/* FORM SECTIONS */
+.form-section {
+    margin-bottom: 30px;
+    background: rgba(255,255,255,0.25);
+    backdrop-filter: blur(12px);
+    padding: 25px;
+    border-radius: 20px;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+    border: 1px solid rgba(255,255,255,0.2);
 }
 
+.form-section h2 {
+    margin-bottom: 15px;
+    color: #1e3c72;
+    font-weight: 600;
+}
+
+.form-section input,
+.form-section select,
+.form-section button {
+    width: 100%;
+    padding: 12px;
+    margin: 8px 0;
+    border-radius: 12px;
+    border: 1px solid rgba(0,0,0,0.1);
+    font-size: 15px;
+    background: rgba(255,255,255,0.8);
+}
+
+.form-section button {
+    background: linear-gradient(90deg, #1e3c72, #2a5298);
+    color: #fff;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+}
+
+.form-section button:hover {
+    transform: scale(1.03);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+}
+
+/* STOCK BUTTONS INLINE */
+#stockInBtn, #stockOutBtn {
+    width: 48%;
+    display: inline-block;
+    margin-right: 2%;
+    font-weight: 600;
+}
+
+#stockOutBtn { background: #dc3545; color: #fff; }
+#stockInBtn { background: #28a745; color: #fff; }
+
+/* SEARCH & FILTER */
+.search-filter {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 25px;
+}
+
+.search-filter input,
+.search-filter select {
+    flex: 1;
+    padding: 12px;
+    border-radius: 12px;
+    border: 1px solid rgba(0,0,0,0.1);
+    background: rgba(255,255,255,0.8);
+}
+
+/* TABLES */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    background: rgba(255,255,255,0.25);
+    backdrop-filter: blur(12px);
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+}
+
+table th, table td {
+    padding: 12px;
+    text-align: center;
+    border-bottom: 1px solid rgba(0,0,0,0.1);
+}
+
+table th {
+    background: linear-gradient(90deg, #1e3c72, #2a5298);
+    color: #fff;
+    font-weight: 600;
+}
+
+table td img {
+    width: 55px;
+    height: 55px;
+    object-fit: cover;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+}
+
+table td img:hover {
+    transform: scale(1.2);
+}
+
+table button {
+    background: #dc3545;
+    color: #fff;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+table button:hover {
+    opacity: 0.85;
+    transform: scale(1.05);
+}
+
+/* CHART SECTION */
+.chart-section {
+    margin-top: 35px;
+    background: rgba(255,255,255,0.25);
+    backdrop-filter: blur(12px);
+    padding: 25px;
+    border-radius: 20px;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+}
+
+/* EXPORT BUTTONS */
+button#exportInventoryBtn,
+button#exportTransactionsBtn {
+    margin-top: 25px;
+    background: linear-gradient(90deg, #1e3c72, #2a5298);
+    color: #fff;
+    padding: 12px 25px;
+    border-radius: 12px;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+button#exportInventoryBtn:hover,
+button#exportTransactionsBtn:hover {
+    transform: scale(1.05);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+}
+
+/* RESPONSIVE */
+@media(max-width: 900px){
+    .wrapper { flex-direction: column; }
+    .sidebar { width: 100%; display: flex; justify-content: space-around; padding: 15px; height: auto; }
+    .sidebar h2 { display: none; }
+    .summary { flex-direction: column; }
+    .search-filter { flex-direction: column; }
+    #stockInBtn, #stockOutBtn { width: 100%; margin-right: 0; margin-top: 10px; }
 }
