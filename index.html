@@ -6,6 +6,14 @@
 <title>Regray Stone & Furniture Inventory System </title>
 <link rel="stylesheet" href="style.css">
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+/* LOGIN PROTECTION */
+if(localStorage.getItem("adminLoggedIn") !== "true"){
+    window.location.href = "login.html";
+}
+</script>
+
 </head>
 <body>
 
@@ -129,8 +137,15 @@
 </div>
 
 <script src="script.js"></script>
+  <script>
+/* LOGIN PROTECTION */
+if(localStorage.getItem("adminLoggedIn") !== "true"){
+    window.location.href = "login.html";
+}
+</script>
 </body>
 </html>
+
 
 
 
