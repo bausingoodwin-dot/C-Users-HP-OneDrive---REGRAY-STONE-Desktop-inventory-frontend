@@ -1,233 +1,216 @@
 let products = JSON.parse(localStorage.getItem("products")) || [];
-
 let history = JSON.parse(localStorage.getItem("history")) || [];
 
 const table = document.getElementById("inventoryTable");
 const historyTable = document.getElementById("historyTable");
 const productSelect = document.getElementById("productSelect");
 
-function saveData(){
-
-localStorage.setItem("products", JSON.stringify(products));
-localStorage.setItem("history", JSON.stringify(history));
-
+function saveData() {
+    localStorage.setItem("products", JSON.stringify(products));
+    localStorage.setItem("history", JSON.stringify(history));
 }
 
-function render(){
+function render() {
 
-table.innerHTML = "";
-productSelect.innerHTML = '<option value="">Select Product</option>';
+    table.innerHTML = "";
+    productSelect.innerHTML = '<option value="">Select Product</option>';
 
-let totalStock = 0;
+    let totalStock = 0;
 
-products.forEach((p,i)=>{
+    products.forEach((p, i) => {
 
-totalStock += p.qty;
+        totalStock += p.qty;
 
-let option = `<option value="${i}">${p.name}</option>`;
-productSelect.innerHTML += option;
+        let option = document.createElement("option");
+        option.value = i;
+        option.textContent = p.name;
+        productSelect.appendChild(option);
 
-let row = `
+        let row = document.createElement("tr");
 
-<tr>
+        row.innerHTML = `
+        <td>${p.image ? `<img src="${p.image}" width="60">` : "-"}</td>
+        <td>${p.name}</td>
+        <td>${p.category}</td>
+        <td>${p.qty}</td>
+        <td><button onclick="deleteProduct(${i})">Delete</button></td>
+        `;
 
-<td><img src="${p.image}" width="50"></td>
-<td>${p.name}</td>
-<td>${p.category}</td>
-<td>${p.qty}</td>
+        table.appendChild(row);
+    });
 
-<td>
+    document.getElementById("totalProducts").textContent = products.length;
+    document.getElementById("totalStocks").textContent = totalStock;
 
-<button onclick="deleteProduct(${i})">Delete</button>
+    renderHistory();
+}
 
-</td>
+function renderHistory() {
 
-</tr>
+    historyTable.innerHTML = "";
 
-`;
+    history.forEach(h => {
 
-table.innerHTML += row;
+        let row = document.createElement("tr");
 
+        row.innerHTML = `
+        <td>${h.date}</td>
+        <td>${h.product}</td>
+        <td>${h.type}</td>
+        <td>${h.qty}</td>
+        `;
+
+        historyTable.appendChild(row);
+    });
+}
+
+
+// ADD PRODUCT
+document.getElementById("addProductForm").addEventListener("submit", function(e) {
+
+    e.preventDefault();
+
+    let name = document.getElementById("name").value.trim();
+    let category = document.getElementById("category").value.trim();
+    let qty = parseInt(document.getElementById("quantity").value);
+    let imageInput = document.getElementById("image");
+
+    if (!name || !category || !qty) {
+        alert("Please fill all fields");
+        return;
+    }
+
+    let imageFile = imageInput.files[0];
+
+    if (imageFile) {
+
+        let reader = new FileReader();
+
+        reader.onload = function(event) {
+
+            products.push({
+                name: name,
+                category: category,
+                qty: qty,
+                image: event.target.result
+            });
+
+            saveData();
+            render();
+        };
+
+        reader.readAsDataURL(imageFile);
+
+    } else {
+
+        products.push({
+            name: name,
+            category: category,
+            qty: qty,
+            image: ""
+        });
+
+        saveData();
+        render();
+    }
+
+    this.reset();
 });
 
-document.getElementById("totalProducts").innerText = products.length;
-document.getElementById("totalStocks").innerText = totalStock;
 
-renderHistory();
+// STOCK IN
+document.getElementById("stockInBtn").onclick = function() {
 
-}
+    let index = productSelect.value;
+    let qty = parseInt(document.getElementById("stockQty").value);
 
-function renderHistory(){
+    if (index === "" || !qty) return;
 
-historyTable.innerHTML="";
+    products[index].qty += qty;
 
-history.forEach(h=>{
+    history.push({
+        date: new Date().toLocaleString(),
+        product: products[index].name,
+        type: "IN",
+        qty: qty
+    });
 
-let row = `
-
-<tr>
-
-<td>${h.date}</td>
-<td>${h.product}</td>
-<td>${h.type}</td>
-<td>${h.qty}</td>
-
-</tr>
-
-`;
-
-historyTable.innerHTML += row;
-
-});
-
-}
-
-
-document.getElementById("addProductForm").addEventListener("submit",function(e){
-
-e.preventDefault();
-
-let name=document.getElementById("name").value;
-let category=document.getElementById("category").value;
-let qty=parseInt(document.getElementById("quantity").value);
-let imageInput=document.getElementById("image");
-
-let image="";
-
-if(imageInput.files[0]){
-
-let reader=new FileReader();
-
-reader.onload=function(e){
-
-image=e.target.result;
-
-products.push({name,category,qty,image});
-
-saveData();
-render();
-
+    saveData();
+    render();
 };
 
-reader.readAsDataURL(imageInput.files[0]);
 
-}else{
+// STOCK OUT
+document.getElementById("stockOutBtn").onclick = function() {
 
-products.push({name,category,qty,image});
+    let index = productSelect.value;
+    let qty = parseInt(document.getElementById("stockQty").value);
 
-saveData();
-render();
+    if (index === "" || !qty) return;
 
+    if (products[index].qty < qty) {
+        alert("Not enough stock");
+        return;
+    }
+
+    products[index].qty -= qty;
+
+    history.push({
+        date: new Date().toLocaleString(),
+        product: products[index].name,
+        type: "OUT",
+        qty: qty
+    });
+
+    saveData();
+    render();
+};
+
+
+// DELETE
+function deleteProduct(i) {
+
+    if (confirm("Delete product?")) {
+
+        products.splice(i, 1);
+
+        saveData();
+        render();
+    }
 }
 
-this.reset();
 
+// SEARCH
+document.getElementById("search").addEventListener("input", function() {
+
+    let value = this.value.toLowerCase();
+
+    let rows = table.getElementsByTagName("tr");
+
+    for (let i = 0; i < rows.length; i++) {
+
+        rows[i].style.display =
+            rows[i].innerText.toLowerCase().includes(value) ? "" : "none";
+    }
 });
 
 
-document.getElementById("stockInBtn").onclick=function(){
+// EXPORT CSV
+document.getElementById("exportBtn").onclick = function() {
 
-let index=productSelect.value;
-let qty=parseInt(document.getElementById("stockQty").value);
+    let csv = "Product,Category,Stock\n";
 
-if(index===""||!qty) return;
+    products.forEach(p => {
+        csv += `${p.name},${p.category},${p.qty}\n`;
+    });
 
-products[index].qty+=qty;
+    let blob = new Blob([csv]);
+    let a = document.createElement("a");
 
-history.push({
+    a.href = URL.createObjectURL(blob);
+    a.download = "inventory.csv";
 
-date:new Date().toLocaleString(),
-product:products[index].name,
-type:"IN",
-qty
-
-});
-
-saveData();
-render();
-
-}
-
-
-document.getElementById("stockOutBtn").onclick=function(){
-
-let index=productSelect.value;
-let qty=parseInt(document.getElementById("stockQty").value);
-
-if(index===""||!qty) return;
-
-if(products[index].qty<qty){
-
-alert("Not enough stock");
-return;
-
-}
-
-products[index].qty-=qty;
-
-history.push({
-
-date:new Date().toLocaleString(),
-product:products[index].name,
-type:"OUT",
-qty
-
-});
-
-saveData();
-render();
-
-}
-
-
-function deleteProduct(i){
-
-if(confirm("Delete product?")){
-
-products.splice(i,1);
-
-saveData();
-render();
-
-}
-
-}
-
-
-document.getElementById("search").addEventListener("input",function(){
-
-let value=this.value.toLowerCase();
-
-let rows=table.getElementsByTagName("tr");
-
-for(let i=0;i<rows.length;i++){
-
-rows[i].style.display = rows[i].innerText.toLowerCase().includes(value) ? "" : "none";
-
-}
-
-});
-
-
-document.getElementById("exportBtn").onclick=function(){
-
-let csv="Product,Category,Stock\n";
-
-products.forEach(p=>{
-
-csv+=`${p.name},${p.category},${p.qty}\n`;
-
-});
-
-let blob=new Blob([csv]);
-
-let a=document.createElement("a");
-
-a.href=URL.createObjectURL(blob);
-a.download="inventory.csv";
-
-a.click();
-
+    a.click();
 };
 
 render();
