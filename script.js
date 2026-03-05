@@ -12,23 +12,29 @@ const transactionsSection = document.getElementById("transactionsSection");
 const dashboardBtn = document.getElementById("dashboardBtn");
 const transactionsBtn = document.getElementById("transactionsBtn");
 
-// SPA Toggle
+let categoryChart;
+
+// --- SPA Navigation ---
 dashboardBtn.addEventListener("click", () => {
     dashboardSection.style.display = "block";
     transactionsSection.style.display = "none";
+    dashboardBtn.classList.add("active");
+    transactionsBtn.classList.remove("active");
 });
 transactionsBtn.addEventListener("click", () => {
     dashboardSection.style.display = "none";
     transactionsSection.style.display = "block";
+    dashboardBtn.classList.remove("active");
+    transactionsBtn.classList.add("active");
 });
 
-// Save data
+// --- Save Data ---
 function saveData() {
     localStorage.setItem("products", JSON.stringify(products));
     localStorage.setItem("history", JSON.stringify(history));
 }
 
-// Render Inventory
+// --- Render Inventory ---
 function renderInventory() {
     inventoryTable.innerHTML = "";
     productSelect.innerHTML = '<option value="">Select Product</option>';
@@ -37,11 +43,13 @@ function renderInventory() {
     products.forEach((p, i) => {
         stockCount += p.quantity;
 
+        // Product Select
         let option = document.createElement("option");
         option.value = i;
         option.textContent = p.name;
         productSelect.appendChild(option);
 
+        // Table Row
         let row = document.createElement("tr");
         row.innerHTML = `
             <td>${p.image ? `<img src="${p.image}" width="60" style="cursor:pointer" onclick="previewImage('${p.image}')">` : "-"}</td>
@@ -51,6 +59,11 @@ function renderInventory() {
             <td><button onclick="deleteProduct(${i})">Delete</button></td>
         `;
         inventoryTable.appendChild(row);
+
+        // Low Stock Notification
+        if(p.quantity>0 && p.quantity < 5){
+            alert(`⚠ Low Stock: ${p.name} only ${p.quantity} left!`);
+        }
     });
 
     totalProducts.textContent = products.length;
@@ -60,7 +73,7 @@ function renderInventory() {
     renderChart();
 }
 
-// Render History
+// --- Render History ---
 function renderHistory() {
     historyTable.innerHTML = "";
     history.forEach(h => {
@@ -70,7 +83,7 @@ function renderHistory() {
     });
 }
 
-// Add Product
+// --- Add Product ---
 document.getElementById("addProductForm").addEventListener("submit", function(e){
     e.preventDefault();
     const name = document.getElementById("name").value.trim();
@@ -85,11 +98,11 @@ document.getElementById("addProductForm").addEventListener("submit", function(e)
         const reader = new FileReader();
         reader.onload = function(e){
             image = e.target.result;
-            addProduct(name,category,quantity,image);
+            addProduct(name, category, quantity, image);
         }
         reader.readAsDataURL(imageInput.files[0]);
     } else {
-        addProduct(name,category,quantity,image);
+        addProduct(name, category, quantity, image);
     }
     this.reset();
 });
@@ -101,7 +114,7 @@ function addProduct(name, category, quantity, image){
     renderInventory();
 }
 
-// Stock In
+// --- Stock In ---
 document.getElementById("stockInBtn").onclick = function(){
     const index = productSelect.value;
     const qty = parseInt(document.getElementById("stockQty").value);
@@ -112,7 +125,7 @@ document.getElementById("stockInBtn").onclick = function(){
     document.getElementById("stockQty").value = "";
 }
 
-// Stock Out
+// --- Stock Out ---
 document.getElementById("stockOutBtn").onclick = function(){
     const index = productSelect.value;
     const qty = parseInt(document.getElementById("stockQty").value);
@@ -124,7 +137,7 @@ document.getElementById("stockOutBtn").onclick = function(){
     document.getElementById("stockQty").value = "";
 }
 
-// Delete product
+// --- Delete Product ---
 function deleteProduct(i){ 
     if(confirm("Delete product?")){ 
         products.splice(i,1); 
@@ -133,7 +146,7 @@ function deleteProduct(i){
     } 
 }
 
-// Search & Category Filter
+// --- Search & Category Filter ---
 document.getElementById("search").addEventListener("input", function(){
     const value = this.value.toLowerCase();
     const rows = inventoryTable.getElementsByTagName("tr");
@@ -149,7 +162,7 @@ document.getElementById("categoryFilter").addEventListener("change", function(){
     }
 });
 
-// Image Preview
+// --- Image Preview ---
 function previewImage(src){
     const overlay = document.createElement("div");
     overlay.style.position="fixed";
@@ -163,7 +176,7 @@ function previewImage(src){
     overlay.appendChild(img); document.body.appendChild(overlay);
 }
 
-// Export CSV
+// --- Export CSV ---
 document.getElementById("exportInventoryBtn").onclick = function(){
     let csv="Product,Category,Stock\n";
     products.forEach(p=>{ csv+=`${p.name},${p.category},${p.quantity}\n`; });
@@ -171,7 +184,6 @@ document.getElementById("exportInventoryBtn").onclick = function(){
     a.href = URL.createObjectURL(new Blob([csv]));
     a.download = "inventory.csv"; a.click();
 }
-
 document.getElementById("exportTransactionsBtn").onclick = function(){
     let csv="Date,Product,Type,Quantity\n";
     history.forEach(h=>{ csv+=`${h.date},${h.product},${h.type},${h.qty}\n`; });
@@ -180,11 +192,10 @@ document.getElementById("exportTransactionsBtn").onclick = function(){
     a.download = "transactions.csv"; a.click();
 }
 
-// Chart per category
-let categoryChart;
+// --- Category Chart ---
 function renderChart(){
     const categories = ["PATAGONIA","QUARTZITE","ONYX","MARBLE","TRAVERTINE","LIMESTONE","GRANITE","CRAZY CUT","COBBLESTONE"];
-    const data = categories.map(cat=>products.filter(p=>p.category===cat).reduce((sum,p)=>sum+p.quantity,0));
+    const data = categories.map(cat => products.filter(p=>p.category===cat).reduce((sum,p)=>sum+p.quantity,0));
     const ctx = document.getElementById("categoryChart").getContext("2d");
     if(categoryChart) categoryChart.destroy();
     categoryChart = new Chart(ctx, {
@@ -194,5 +205,5 @@ function renderChart(){
     });
 }
 
-// Initial render
+// --- Initial Render ---
 renderInventory();
