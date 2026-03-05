@@ -3,14 +3,23 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Ultimate Inventory System</title>
+<title>Ultimate Inventory System SPA</title>
 <link rel="stylesheet" href="style.css">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
 
 <header>
-<h1>Ultimate Inventory Dashboard</h1>
+<h1>Ultimate Inventory System</h1>
 </header>
+
+<nav class="main-nav">
+  <button id="dashboardBtn">Dashboard</button>
+  <button id="transactionsBtn">Transactions</button>
+</nav>
+
+<!-- DASHBOARD -->
+<section id="dashboardSection">
 
 <section class="summary">
 <div class="card">
@@ -27,7 +36,6 @@
 <h2>Add New Product</h2>
 <form id="addProductForm">
 <input type="text" id="name" placeholder="Product Name" required>
-
 <select id="category" required>
 <option value="">Select Category</option>
 <option>PATAGONIA</option>
@@ -40,7 +48,6 @@
 <option>CRAZY CUT</option>
 <option>COBBLESTONE</option>
 </select>
-
 <input type="number" id="quantity" placeholder="Quantity" required>
 <input type="file" id="image">
 <button type="submit">Add Product</button>
@@ -72,6 +79,11 @@
 </select>
 </section>
 
+<section class="charts">
+<h2>Stock per Category</h2>
+<canvas id="categoryChart" width="400" height="200"></canvas>
+</section>
+
 <section class="table-section">
 <h2>Inventory</h2>
 <table>
@@ -88,8 +100,12 @@
 </table>
 </section>
 
-<section class="table-section">
-<h2>Transactions</h2>
+<button id="exportInventoryBtn">Export Inventory CSV</button>
+</section>
+
+<!-- TRANSACTIONS -->
+<section id="transactionsSection" style="display:none;">
+<h2>All Transactions</h2>
 <table>
 <thead>
 <tr>
@@ -101,9 +117,8 @@
 </thead>
 <tbody id="historyTable"></tbody>
 </table>
+<button id="exportTransactionsBtn">Export Transactions CSV</button>
 </section>
-
-<button id="exportBtn">Export CSV</button>
 
 <script src="script.js"></script>
 </body>
