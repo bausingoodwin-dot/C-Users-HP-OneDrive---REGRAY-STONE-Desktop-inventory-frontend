@@ -1,17 +1,17 @@
 <!DOCTYPE html>
 <html>
+
 <head>
-<title>Inventory Manager</title>
+
+<title>Ultimate Inventory System</title>
+
 <link rel="stylesheet" href="style.css">
+
 </head>
 
 <body>
 
-<div class="container">
-
-<header>
-<h1>Inventory Management System</h1>
-</header>
+<h1>Inventory Dashboard</h1>
 
 <div class="summary">
 
@@ -21,31 +21,53 @@
 </div>
 
 <div class="card">
-<h3>Total Stock</h3>
-<p id="totalStock">0</p>
+<h3>Total Stocks</h3>
+<p id="totalStocks">0</p>
 </div>
 
 </div>
 
-<div class="form-section">
 
-<input type="text" id="productName" placeholder="Product Name">
+<h2>Add Product</h2>
 
-<input type="number" id="productQty" placeholder="Quantity">
+<form id="addProductForm">
 
-<input type="file" id="productImage">
+<input type="text" id="name" placeholder="Product Name" required>
 
-<div class="buttons">
+<input type="text" id="category" placeholder="Category" required>
 
-<button id="stockInBtn">Add Product</button>
+<input type="number" id="quantity" placeholder="Quantity" required>
 
-</div>
+<input type="file" id="image">
 
-</div>
+<button type="submit">Add Product</button>
 
-<div class="search-box">
-<input type="text" id="searchInput" placeholder="Search product">
-</div>
+</form>
+
+
+<h2>Stock Control</h2>
+
+<select id="productSelect">
+
+<option value="">Select Product</option>
+
+</select>
+
+<input type="number" id="stockQty" placeholder="Quantity">
+
+<button id="stockInBtn">Stock In</button>
+
+<button id="stockOutBtn">Stock Out</button>
+
+
+
+<h2>Search</h2>
+
+<input type="text" id="search" placeholder="Search product">
+
+
+
+<h2>Inventory</h2>
 
 <table>
 
@@ -54,32 +76,42 @@
 <tr>
 <th>Image</th>
 <th>Product</th>
+<th>Category</th>
 <th>Stock</th>
-<th>Actions</th>
+<th>Action</th>
 </tr>
 
 </thead>
 
-<tbody id="inventoryTable">
-
-</tbody>
+<tbody id="inventoryTable"></tbody>
 
 </table>
 
-</div>
+
+<h2>Transactions</h2>
+
+<table>
+
+<thead>
+
+<tr>
+<th>Date</th>
+<th>Product</th>
+<th>Type</th>
+<th>Quantity</th>
+</tr>
+
+</thead>
+
+<tbody id="historyTable"></tbody>
+
+</table>
 
 
-<!-- IMAGE PREVIEW -->
-
-<div id="imagePreview" class="modal">
-
-<span class="close" id="closePreview">&times;</span>
-
-<img id="previewImg">
-
-</div>
+<button id="exportBtn">Export CSV</button>
 
 <script src="script.js"></script>
 
 </body>
+
 </html>
