@@ -1,89 +1,52 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Regray Inventory System</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="style.css">
+<meta charset="UTF-8">
+<title>Inventory Manager</title>
+<link rel="stylesheet" href="style.css">
 </head>
 
 <body>
 
-<main class="container">
+<h1>Inventory Manager</h1>
 
-    <header>
-        <h1>Regray Inventory System</h1>
-    </header>
+<div class="form">
 
-    <!-- SUMMARY -->
-    <section class="summary">
-        <div class="card">
-            <h3>Total Products</h3>
-            <p id="totalProducts">0</p>
-        </div>
-        <div class="card">
-            <h3>Total Stocks</h3>
-            <p id="totalStocks">0</p>
-        </div>
-    </section>
+<input type="text" id="productName" placeholder="Product Name">
 
-    <!-- ADD PRODUCT -->
-    <section class="form-section">
-        <h2>Add New Product</h2>
-        <form id="addProductForm">
-            <input type="text" id="newProductName" placeholder="Product Name" required>
-            <input type="text" id="newProductCategory" placeholder="Category" required>
-            <input type="file" id="newProductImage" accept="image/*" required>
-            <button type="submit">Add Product</button>
-        </form>
-    </section>
+<input type="number" id="productStock" placeholder="Stock">
 
-    <!-- STOCK SECTION -->
-    <section class="form-section">
-        <h2>Stock Management</h2>
-        <form id="stockForm">
+<input type="file" id="productImage">
 
-            <select id="product" required>
-                <option value="">Select Product</option>
-            </select>
+<button onclick="addProduct()">Add Product</button>
 
-            <input type="text" id="category" placeholder="Category" readonly>
+</div>
 
-            <input type="number" id="quantity" placeholder="Quantity" min="1" required>
 
-            <div class="buttons">
-                <button type="button" id="stockInBtn">Stock In</button>
-                <button type="button" id="stockOutBtn" class="danger">Stock Out</button>
-                <button type="button" id="exportBtn" class="export">Export CSV</button>
-            </div>
+<table>
 
-        </form>
-    </section>
+<thead>
+<tr>
+<th>Image</th>
+<th>Product</th>
+<th>Stock</th>
+<th>Actions</th>
+</tr>
+</thead>
 
-    <!-- SEARCH -->
-    <section class="search-box">
-        <input type="text" id="search" placeholder="Search product...">
-    </section>
+<tbody id="productTable"></tbody>
 
-    <!-- TABLE -->
-    <section class="table-section">
-        <table>
-            <thead>
-                <tr>
-                    <th>Photo</th>
-                    <th>Product</th>
-                    <th>Category</th>
-                    <th>Quantity</th>
-                    <th>Last Updated</th>
-                    <th>Action</th>
-                </tr>
-            </thead>
-            <tbody id="inventoryTable"></tbody>
-        </table>
-    </section>
+</table>
 
-</main>
+
+<!-- IMAGE PREVIEW -->
+<div id="previewModal" class="modal">
+<span onclick="closePreview()" class="close">&times;</span>
+<img id="previewImage">
+</div>
+
 
 <script src="script.js"></script>
+
 </body>
 </html>
