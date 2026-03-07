@@ -1,23 +1,23 @@
-document.getElementById("loginForm").addEventListener("submit",function(e){
+document.addEventListener("DOMContentLoaded", function() {
+    const loginForm = document.getElementById("loginForm");
+    const errorEl = document.getElementById("error");
 
-e.preventDefault();
+    loginForm.addEventListener("submit", function(e){
+        e.preventDefault();
 
-const username = document.getElementById("username").value.trim();
-const password = document.getElementById("password").value.trim();
+        const username = document.getElementById("username").value.trim();
+        const password = document.getElementById("password").value.trim();
 
-if(username === "admin" && password === "12345"){
+        // Check credentials
+        if(username === "admin" && password === "12345"){
+            localStorage.setItem("adminLoggedIn","true");
+            window.location.href = "index.html"; // your dashboard file
+        } else {
+            errorEl.textContent = "Wrong username or password";
+        }
+    });
 
-localStorage.setItem("adminLoggedIn","true");
-window.location.href = "index.html";
-
-}else{
-
-document.getElementById("error").textContent = "Wrong username or password";
-
-}
-document.getElementById("username").addEventListener("input", ()=> {
-document.getElementById("error").textContent = "";
-});
-document.getElementById("password").addEventListener("input", ()=> {
-document.getElementById("error").textContent = "";
+    // Clear error when typing again
+    document.getElementById("username").addEventListener("input", ()=> { errorEl.textContent = ""; });
+    document.getElementById("password").addEventListener("input", ()=> { errorEl.textContent = ""; });
 });
