@@ -76,6 +76,15 @@ if(localStorage.getItem("adminLoggedIn") !== "true"){
         <button id="stockOutBtn">Stock Out</button>
       </section>
 
+        <section class="form-section">
+  <h2>Update Product Image</h2>
+  <select id="updateProductSelect">
+    <option value="">Select Product</option>
+  </select>
+  <input type="file" id="updateImage" accept="image/*">
+  <button id="updateImageBtn">Update Image</button>
+</section>
+
       <section class="search-filter">
         <input type="text" id="search" placeholder="Search product">
         <select id="categoryFilter">
@@ -143,6 +152,7 @@ if(localStorage.getItem("adminLoggedIn") !== "true"){
 </script>
 </body>
 </html>
+
 
 
 
