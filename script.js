@@ -14,6 +14,9 @@ const dashboardBtn = document.getElementById("dashboardBtn");
 const transactionsBtn = document.getElementById("transactionsBtn");
 const chartBtn = document.getElementById("chartBtn");
 
+// --- NEW: Update Image Select Box ---
+const updateProductSelect = document.getElementById("updateProductSelect"); // Add this in your HTML
+
 let categoryChart;
 
 // --- SPA NAVIGATION ---
@@ -55,16 +58,30 @@ function saveData(){
 function renderInventory(){
   inventoryTable.innerHTML = "";
   productSelect.innerHTML = '<option value="">Select Product</option>';
+
+  // --- NEW: Populate Update Image Select ---
+  if(updateProductSelect) updateProductSelect.innerHTML = '<option value="">Select Product</option>';
+
   let stockCount = 0;
 
   products.forEach((p,i)=>{
     stockCount += p.quantity;
 
+    // Stock select
     let option = document.createElement("option");
     option.value = i;
     option.textContent = p.name;
     productSelect.appendChild(option);
 
+    // --- NEW: Update image select ---
+    if(updateProductSelect){
+      let option2 = document.createElement("option");
+      option2.value = i;
+      option2.textContent = p.name;
+      updateProductSelect.appendChild(option2);
+    }
+
+    // Inventory table row
     let row = document.createElement("tr");
     row.innerHTML = `
       <td>${p.image? `<img src="${p.image}" width="60" style="cursor:pointer" onclick="previewImage('${p.image}')">`:"-"}</td>
@@ -214,19 +231,14 @@ function renderChart(){
   });
 }
 
-// --- INITIAL RENDER ---
-renderInventory();
-// --- INITIAL RENDER ---
-renderInventory();
-
-
 // --- LOGOUT SYSTEM ---
 const logoutBtn = document.getElementById("logoutBtn");
-
 if(logoutBtn){
-logoutBtn.onclick = function(){
-    localStorage.removeItem("adminLoggedIn");
-    window.location.href = "login.html";
-}
+  logoutBtn.onclick = function(){
+      localStorage.removeItem("adminLoggedIn");
+      window.location.href = "login.html";
+  }
 }
 
+// --- INITIAL RENDER ---
+renderInventory();
