@@ -8,6 +8,8 @@ const historyTable = document.getElementById("historyTable");
 const productSelect = document.getElementById("productSelect");
 const step2ProductSelect = document.getElementById("step2ProductSelect"); // Step 2 select box
 const updateProductSelect = document.getElementById("updateProductSelect"); // Update image select box
+const updateImageInput = document.getElementById("updateImage");
+const updateImageBtn = document.getElementById("updateImageBtn");
 const totalProducts = document.getElementById("totalProducts");
 const totalStocks = document.getElementById("totalStocks");
 const dashboardSection = document.getElementById("dashboardSection");
@@ -189,6 +191,30 @@ document.getElementById("categoryFilter").addEventListener("change", function(){
   }
 });
 
+// --- UPDATE PRODUCT IMAGE ---
+if(updateImageBtn){
+  updateImageBtn.onclick = function(){
+    const index = updateProductSelect.value;
+    if(index === "") { 
+      alert("Please select a product to update."); 
+      return; 
+    }
+    if(!updateImageInput.files[0]){
+      alert("Please choose an image to update.");
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = function(e){
+      products[index].image = e.target.result; // Update the image
+      saveData();
+      renderInventory();
+      alert("Product image updated successfully!");
+      updateImageInput.value = "";
+    }
+    reader.readAsDataURL(updateImageInput.files[0]);
+  }
+}
+
 // --- IMAGE PREVIEW ---
 function previewImage(src){
   const overlay=document.createElement("div");
@@ -196,11 +222,14 @@ function previewImage(src){
   overlay.style.top="0"; overlay.style.left="0";
   overlay.style.width="100%"; overlay.style.height="100%";
   overlay.style.background="rgba(0,0,0,0.8)";
-  overlay.style.display="flex"; overlay.style.justifyContent="center"; overlay.style.alignItems="center";
+  overlay.style.display="flex"; overlay.style.justifyContent="center";
+  overlay.style.alignItems="center";
   overlay.onclick = function(){ document.body.removeChild(overlay); }
   const img=document.createElement("img");
-  img.src = src; img.style.maxWidth="80%"; img.style.maxHeight="80%";
-  overlay.appendChild(img); document.body.appendChild(overlay);
+  img.src = src; img.style.maxWidth="80%";
+  img.style.maxHeight="80%";
+  overlay.appendChild(img);
+  document.body.appendChild(overlay);
 }
 
 // --- EXPORT CSV ---
