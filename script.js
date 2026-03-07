@@ -2,9 +2,12 @@
 let products = JSON.parse(localStorage.getItem("products")) || [];
 let history = JSON.parse(localStorage.getItem("history")) || [];
 
+// --- DOM ELEMENTS ---
 const inventoryTable = document.getElementById("inventoryTable");
 const historyTable = document.getElementById("historyTable");
 const productSelect = document.getElementById("productSelect");
+const step2ProductSelect = document.getElementById("step2ProductSelect"); // Step 2 select box
+const updateProductSelect = document.getElementById("updateProductSelect"); // Update image select box
 const totalProducts = document.getElementById("totalProducts");
 const totalStocks = document.getElementById("totalStocks");
 const dashboardSection = document.getElementById("dashboardSection");
@@ -13,9 +16,6 @@ const chartSection = document.getElementById("chartSection");
 const dashboardBtn = document.getElementById("dashboardBtn");
 const transactionsBtn = document.getElementById("transactionsBtn");
 const chartBtn = document.getElementById("chartBtn");
-
-// --- NEW: Update Image Select Box ---
-const updateProductSelect = document.getElementById("updateProductSelect"); // Add this in your HTML
 
 let categoryChart;
 
@@ -58,33 +58,34 @@ function saveData(){
 function renderInventory(){
   inventoryTable.innerHTML = "";
   productSelect.innerHTML = '<option value="">Select Product</option>';
-
-  // --- NEW: Populate Update Image Select ---
-  if(updateProductSelect) updateProductSelect.innerHTML = '<option value="">Select Product</option>';
+  step2ProductSelect.innerHTML = '<option value="">Select Product</option>';
+  updateProductSelect.innerHTML = '<option value="">Select Product</option>';
 
   let stockCount = 0;
 
-  products.forEach((p,i)=>{
+  products.forEach((p, i) => {
     stockCount += p.quantity;
 
-    // Stock select
-    let option = document.createElement("option");
-    option.value = i;
-    option.textContent = p.name;
-    productSelect.appendChild(option);
+    // Populate all select boxes
+    const option1 = document.createElement("option");
+    option1.value = i;
+    option1.textContent = p.name;
+    productSelect.appendChild(option1);
 
-    // --- NEW: Update image select ---
-    if(updateProductSelect){
-      let option2 = document.createElement("option");
-      option2.value = i;
-      option2.textContent = p.name;
-      updateProductSelect.appendChild(option2);
-    }
+    const option2 = document.createElement("option");
+    option2.value = i;
+    option2.textContent = p.name;
+    step2ProductSelect.appendChild(option2);
+
+    const option3 = document.createElement("option");
+    option3.value = i;
+    option3.textContent = p.name;
+    updateProductSelect.appendChild(option3);
 
     // Inventory table row
-    let row = document.createElement("tr");
+    const row = document.createElement("tr");
     row.innerHTML = `
-      <td>${p.image? `<img src="${p.image}" width="60" style="cursor:pointer" onclick="previewImage('${p.image}')">`:"-"}</td>
+      <td>${p.image ? `<img src="${p.image}" width="60" style="cursor:pointer" onclick="previewImage('${p.image}')">` : "-"}</td>
       <td>${p.name}</td>
       <td>${p.category}</td>
       <td>${p.quantity}</td>
@@ -102,15 +103,15 @@ function renderInventory(){
 // --- RENDER HISTORY ---
 function renderHistory(){
   historyTable.innerHTML = "";
-  history.forEach(h=>{
-    let row = document.createElement("tr");
+  history.forEach(h => {
+    const row = document.createElement("tr");
     row.innerHTML = `<td>${h.date}</td><td>${h.product}</td><td>${h.type}</td><td>${h.qty}</td>`;
     historyTable.appendChild(row);
   });
 }
 
 // --- ADD PRODUCT ---
-document.getElementById("addProductForm").addEventListener("submit",function(e){
+document.getElementById("addProductForm").addEventListener("submit", function(e){
   e.preventDefault();
   const name = document.getElementById("name").value.trim();
   const category = document.getElementById("category").value;
