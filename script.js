@@ -216,3 +216,17 @@ function renderChart(){
 
 // --- INITIAL RENDER ---
 renderInventory();
+// --- INITIAL RENDER ---
+renderInventory();
+
+
+// --- LOGOUT SYSTEM ---
+const logoutBtn = document.getElementById("logoutBtn");
+
+if(logoutBtn){
+logoutBtn.onclick = function(){
+    localStorage.removeItem("adminLoggedIn");
+    window.location.href = "login.html";
+}
+}
+
