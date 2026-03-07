@@ -15,5 +15,11 @@ window.location.href = "index.html";
 document.getElementById("error").textContent = "Wrong username or password";
 
 }
+document.getElementById("username").addEventListener("input", ()=> {
+document.getElementById("error").textContent = "";
+});
+
+document.getElementById("password").addEventListener("input", ()=> {
+document.getElementById("error").textContent = "";
 
 });
