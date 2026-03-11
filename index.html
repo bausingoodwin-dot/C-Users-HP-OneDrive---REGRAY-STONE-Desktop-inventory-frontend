@@ -77,14 +77,6 @@ if(localStorage.getItem("adminLoggedIn") !== "true"){
         <button id="stockOutBtn">Stock Out</button>
       </section>
 
-      <!-- Step 2: Select Product -->
-      <section class="form-section">
-        <h2>Step 2: Select Product</h2>
-        <select id="step2ProductSelect">
-          <option value="">Select Product</option>
-        </select>
-      </section>
-
       <!-- Update Product Image -->
       <section class="form-section">
         <h2>Update Product Image</h2>
@@ -93,29 +85,6 @@ if(localStorage.getItem("adminLoggedIn") !== "true"){
         </select>
         <input type="file" id="updateImage" accept="image/*">
         <button id="updateImageBtn">Update Image</button>
-      </section>
-
-      <!-- EDIT PRODUCT -->
-      <section class="form-section">
-        <h2>Edit Product Details</h2>
-        <select id="editProductSelect">
-          <option value="">Select Product</option>
-        </select>
-        <input type="text" id="editName" placeholder="New Product Name">
-        <select id="editCategory">
-          <option value="">Select Category</option>
-          <option>PATAGONIA</option>
-          <option>QUARTZITE</option>
-          <option>ONYX</option>
-          <option>MARBLE</option>
-          <option>TRAVERTINE</option>
-          <option>LIMESTONE</option>
-          <option>GRANITE</option>
-          <option>CRAZY CUT</option>
-          <option>COBBLESTONE</option>
-        </select>
-        <input type="number" id="editQuantity" placeholder="New Quantity">
-        <button id="editProductBtn">Update Product</button>
       </section>
 
       <!-- Search & Filter -->
