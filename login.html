@@ -9,29 +9,27 @@
 <!-- Redirect if already logged in -->
 <script>
 if(localStorage.getItem("adminLoggedIn") === "true"){
-    window.location.href = "index.html"; // make sure this matches your dashboard file
+    window.location.href = "index.html";
 }
 </script>
+
 </head>
 <body>
 
-<div class="login-wrapper">
-  <div class="login-card">
-    <div class="logo">
-      <img src="logo.png" alt="Logo">
-    </div>
-    <h2>Admin Login</h2>
+<div class="login-box">
+  <h2>Admin Login</h2>
 
-    <form id="loginForm">
-      <input type="text" id="username" placeholder="Username" required autocomplete="username">
-      <input type="password" id="password" placeholder="Password" required autocomplete="current-password">
-      <button type="submit">Login</button>
-      <p id="error"></p>
-    </form>
-  </div>
+  <form id="loginForm" autocomplete="off" novalidate>
+    <!-- Hidden dummy password field to stop browser prompts -->
+    <input type="password" style="display:none">
+    
+    <input type="text" id="username" name="username" placeholder="Username" autocomplete="off" required>
+    <input type="password" id="password" name="password" placeholder="Password" autocomplete="new-password" required>
+    <button type="submit">Login</button>
+    <p id="error" style="color:red; margin-top:10px;"></p>
+  </form>
 </div>
 
 <script src="login.js"></script>
-
 </body>
 </html>
