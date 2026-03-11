@@ -9,7 +9,7 @@
 <!-- Redirect if already logged in -->
 <script>
 if(localStorage.getItem("adminLoggedIn") === "true"){
-    window.location.href = "index.html"; // make sure this matches your dashboard file
+    window.location.href = "index.html";
 }
 </script>
 </head>
@@ -18,7 +18,7 @@ if(localStorage.getItem("adminLoggedIn") === "true"){
 <div class="login-wrapper">
   <div class="login-card">
     <div class="logo">
-      <img src="logo.png" alt="Logo">
+      <img src="logo.png" alt="Regray Stone & Furniture Logo" class="login-logo">
     </div>
     <h2>Admin Login</h2>
 
@@ -26,12 +26,11 @@ if(localStorage.getItem("adminLoggedIn") === "true"){
       <input type="text" id="username" placeholder="Username" required autocomplete="username">
       <input type="password" id="password" placeholder="Password" required autocomplete="current-password">
       <button type="submit">Login</button>
-      <p id="error"></p>
+      <p id="error" style="color:red;"></p>
     </form>
   </div>
 </div>
 
 <script src="login.js"></script>
-
 </body>
 </html>
