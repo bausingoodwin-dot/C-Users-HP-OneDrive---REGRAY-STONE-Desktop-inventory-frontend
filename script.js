@@ -19,13 +19,6 @@ const dashboardBtn = document.getElementById("dashboardBtn");
 const transactionsBtn = document.getElementById("transactionsBtn");
 const chartBtn = document.getElementById("chartBtn");
 
-// --- EDIT PRODUCT ELEMENTS ---
-const editProductSelect = document.getElementById("editProductSelect");
-const editName = document.getElementById("editName");
-const editCategory = document.getElementById("editCategory");
-const editQuantity = document.getElementById("editQuantity");
-const editProductBtn = document.getElementById("editProductBtn");
-
 let categoryChart;
 
 // --- SPA NAVIGATION ---
@@ -58,13 +51,13 @@ chartBtn.addEventListener("click", () => {
 });
 
 // --- SAVE DATA ---
-function saveData(){
+function saveData() {
   localStorage.setItem("products", JSON.stringify(products));
   localStorage.setItem("history", JSON.stringify(history));
 }
 
 // --- RENDER INVENTORY ---
-function renderInventory(){
+function renderInventory() {
   inventoryTable.innerHTML = "";
   productSelect.innerHTML = '<option value="">Select Product</option>';
   step2ProductSelect.innerHTML = '<option value="">Select Product</option>';
@@ -72,13 +65,13 @@ function renderInventory(){
 
   let stockCount = 0;
 
-  products.forEach((p) => {
+  products.forEach((p, i) => {
     stockCount += p.quantity;
 
-    // Populate select boxes
-    [productSelect, step2ProductSelect, updateProductSelect, editProductSelect].forEach(sel => {
+    // Populate select boxes using array index
+    [productSelect, step2ProductSelect, updateProductSelect].forEach(sel => {
       const opt = document.createElement("option");
-      opt.value = p.id;
+      opt.value = i;
       opt.textContent = p.name;
       sel.appendChild(opt);
     });
@@ -90,7 +83,7 @@ function renderInventory(){
       <td>${p.name}</td>
       <td>${p.category}</td>
       <td>${p.quantity}</td>
-      <td><button onclick="deleteProduct('${p.id}')">Delete</button></td>
+      <td><button onclick="deleteProduct(${i})">Delete</button></td>
     `;
     inventoryTable.appendChild(row);
   });
@@ -102,7 +95,7 @@ function renderInventory(){
 }
 
 // --- RENDER HISTORY ---
-function renderHistory(){
+function renderHistory() {
   historyTable.innerHTML = "";
   history.forEach(h => {
     const row = document.createElement("tr");
@@ -112,29 +105,28 @@ function renderHistory(){
 }
 
 // --- ADD PRODUCT ---
-document.getElementById("addProductForm").addEventListener("submit", function(e){
+document.getElementById("addProductForm").addEventListener("submit", function(e) {
   e.preventDefault();
   const name = document.getElementById("name").value.trim();
   const category = document.getElementById("category").value;
   const quantity = parseInt(document.getElementById("quantity").value);
   const imageInput = document.getElementById("image");
 
-  if(!name || !category || !quantity){ alert("Fill all fields"); return; }
+  if (!name || !category || !quantity) { alert("Fill all fields"); return; }
 
   let image = "";
 
   const addAndReset = () => {
-    const id = Date.now().toString(); // Unique ID
-    products.push({id, name, category, quantity, image});
-    history.push({date: new Date().toLocaleString(), product: name, type: "IN", qty: quantity});
+    products.push({ name, category, quantity, image });
+    history.push({ date: new Date().toLocaleString(), product: name, type: "IN", qty: quantity });
     saveData();
     renderInventory();
     this.reset();
   };
 
-  if(imageInput.files[0]){
+  if (imageInput.files[0]) {
     const reader = new FileReader();
-    reader.onload = function(e){
+    reader.onload = function(e) {
       image = e.target.result;
       addAndReset();
     };
@@ -145,49 +137,46 @@ document.getElementById("addProductForm").addEventListener("submit", function(e)
 });
 
 // --- STOCK IN ---
-document.getElementById("stockInBtn").onclick = function(){
-  const id = productSelect.value;
+document.getElementById("stockInBtn").onclick = function() {
+  const index = productSelect.value;
   const qty = parseInt(document.getElementById("stockQty").value);
-  if(!id || !qty) return;
-  const product = products.find(p => p.id === id);
-  product.quantity += qty;
-  history.push({date: new Date().toLocaleString(), product: product.name, type:"IN", qty});
+  if (index === "" || !qty) return;
+  products[index].quantity += qty;
+  history.push({ date: new Date().toLocaleString(), product: products[index].name, type: "IN", qty });
   saveData(); renderInventory();
   document.getElementById("stockQty").value = "";
 };
 
 // --- STOCK OUT ---
-document.getElementById("stockOutBtn").onclick = function(){
-  const id = productSelect.value;
+document.getElementById("stockOutBtn").onclick = function() {
+  const index = productSelect.value;
   const qty = parseInt(document.getElementById("stockQty").value);
-  if(!id || !qty) return;
-  const product = products.find(p => p.id === id);
-  if(product.quantity < qty){ alert("Not enough stock"); return; }
-  product.quantity -= qty;
-  history.push({date: new Date().toLocaleString(), product: product.name, type:"OUT", qty});
+  if (index === "" || !qty) return;
+  if (products[index].quantity < qty) { alert("Not enough stock"); return; }
+  products[index].quantity -= qty;
+  history.push({ date: new Date().toLocaleString(), product: products[index].name, type: "OUT", qty });
   saveData(); renderInventory();
   document.getElementById("stockQty").value = "";
 };
 
 // --- DELETE PRODUCT ---
-function deleteProduct(id){
-  if(confirm("Delete product?")){
-    products = products.filter(p => p.id !== id);
+function deleteProduct(i) {
+  if (confirm("Delete product?")) {
+    products.splice(i, 1);
     saveData();
     renderInventory();
   }
 }
 
 // --- UPDATE PRODUCT IMAGE ---
-updateImageBtn.onclick = function(){
-  const id = updateProductSelect.value;
-  if(!id){ alert("Please select a product to update."); return; }
-  if(!updateImageInput.files[0]){ alert("Please choose an image."); return; }
+updateImageBtn.onclick = function() {
+  const index = updateProductSelect.value;
+  if (index === "") { alert("Please select a product to update."); return; }
+  if (!updateImageInput.files[0]) { alert("Please choose an image."); return; }
 
   const reader = new FileReader();
-  reader.onload = function(e){
-    const product = products.find(p => p.id === id);
-    product.image = e.target.result;
+  reader.onload = function(e) {
+    products[index].image = e.target.result;
     saveData();
     renderInventory();
     alert("Product image updated successfully!");
@@ -196,112 +185,61 @@ updateImageBtn.onclick = function(){
   reader.readAsDataURL(updateImageInput.files[0]);
 };
 
-// --- EDIT PRODUCT ---
-editProductSelect.addEventListener("change", () => {
-  const id = editProductSelect.value;
-  if(!id){
-    editName.value = "";
-    editCategory.value = "";
-    editQuantity.value = "";
-    return;
-  }
-  const product = products.find(p => p.id === id);
-  editName.value = product.name;
-  editCategory.value = product.category;
-  editQuantity.value = product.quantity;
-});
-
-editProductBtn.addEventListener("click", () => {
-  const id = editProductSelect.value;
-  if(!id){ alert("Select a product to edit"); return; }
-
-  const product = products.find(p => p.id === id);
-  const newName = editName.value.trim();
-  const newCategory = editCategory.value;
-  const newQty = parseInt(editQuantity.value);
-
-  if(!newName || !newCategory || isNaN(newQty)){
-    alert("Fill all fields properly");
-    return;
-  }
-
-  product.name = newName;
-  product.category = newCategory;
-  product.quantity = newQty;
-
-  history.push({date:new Date().toLocaleString(), product:newName, type:"EDIT", qty:newQty});
-  saveData();
-  renderInventory();
-  alert("Product updated successfully!");
-});
-
-// --- SEARCH & FILTER ---
-document.getElementById("search").addEventListener("input", function(){
-  const value = this.value.toLowerCase();
-  const rows = inventoryTable.getElementsByTagName("tr");
-  for(let i=0;i<rows.length;i++){
-    rows[i].style.display = rows[i].innerText.toLowerCase().includes(value)?"":"none";
-  }
-});
-document.getElementById("categoryFilter").addEventListener("change", function(){
-  const cat = this.value;
-  const rows = inventoryTable.getElementsByTagName("tr");
-  for(let i=0;i<rows.length;i++){
-    rows[i].style.display = cat==="" || rows[i].innerText.includes(cat)?"":"none";
-  }
-});
-
 // --- IMAGE PREVIEW ---
-function previewImage(src){
+function previewImage(src) {
   const overlay = document.createElement("div");
-  overlay.style.position="fixed";
-  overlay.style.top="0"; overlay.style.left="0";
-  overlay.style.width="100%"; overlay.style.height="100%";
-  overlay.style.background="rgba(0,0,0,0.8)";
-  overlay.style.display="flex"; overlay.style.justifyContent="center";
-  overlay.style.alignItems="center";
+  overlay.style.position = "fixed";
+  overlay.style.top = "0";
+  overlay.style.left = "0";
+  overlay.style.width = "100%";
+  overlay.style.height = "100%";
+  overlay.style.background = "rgba(0,0,0,0.8)";
+  overlay.style.display = "flex";
+  overlay.style.justifyContent = "center";
+  overlay.style.alignItems = "center";
   overlay.onclick = () => document.body.removeChild(overlay);
   const img = document.createElement("img");
   img.src = src;
-  img.style.maxWidth="80%";
-  img.style.maxHeight="80%";
+  img.style.maxWidth = "80%";
+  img.style.maxHeight = "80%";
   overlay.appendChild(img);
   document.body.appendChild(overlay);
-}
+};
 
 // --- EXPORT CSV ---
-document.getElementById("exportInventoryBtn").onclick = function(){
-  let csv="Product,Category,Stock\n";
-  products.forEach(p=>{ csv+=`${p.name},${p.category},${p.quantity}\n`; });
+document.getElementById("exportInventoryBtn").onclick = function() {
+  let csv = "Product,Category,Stock\n";
+  products.forEach(p => { csv += `${p.name},${p.category},${p.quantity}\n`; });
   const a = document.createElement("a");
   a.href = URL.createObjectURL(new Blob([csv]));
   a.download = "inventory.csv"; a.click();
 };
-document.getElementById("exportTransactionsBtn").onclick = function(){
-  let csv="Date,Product,Type,Quantity\n";
-  history.forEach(h=>{ csv+=`${h.date},${h.product},${h.type},${h.qty}\n`; });
+
+document.getElementById("exportTransactionsBtn").onclick = function() {
+  let csv = "Date,Product,Type,Quantity\n";
+  history.forEach(h => { csv += `${h.date},${h.product},${h.type},${h.qty}\n`; });
   const a = document.createElement("a");
   a.href = URL.createObjectURL(new Blob([csv]));
   a.download = "transactions.csv"; a.click();
 };
 
 // --- CATEGORY CHART ---
-function renderChart(){
+function renderChart() {
   const categories = ["PATAGONIA","QUARTZITE","ONYX","MARBLE","TRAVERTINE","LIMESTONE","GRANITE","CRAZY CUT","COBBLESTONE"];
-  const data = categories.map(cat => products.filter(p=>p.category===cat).reduce((sum,p)=>sum+p.quantity,0));
+  const data = categories.map(cat => products.filter(p => p.category === cat).reduce((sum, p) => sum + p.quantity, 0));
   const ctx = document.getElementById("categoryChart").getContext("2d");
-  if(categoryChart) categoryChart.destroy();
+  if (categoryChart) categoryChart.destroy();
   categoryChart = new Chart(ctx, {
-    type:'bar',
-    data:{labels:categories,datasets:[{label:'Stock per Category',data:data,backgroundColor:'rgba(54, 162, 235, 0.7)',borderColor:'rgba(54, 162, 235, 1)',borderWidth:1}]},
-    options:{responsive:true,plugins:{legend:{display:false},title:{display:true,text:'Stock per Category'}},scales:{y:{beginAtZero:true}}}
+    type: 'bar',
+    data: { labels: categories, datasets: [{ label: 'Stock per Category', data: data, backgroundColor: 'rgba(54, 162, 235, 0.7)', borderColor: 'rgba(54, 162, 235, 1)', borderWidth: 1 }] },
+    options: { responsive: true, plugins: { legend: { display: false }, title: { display: true, text: 'Stock per Category' } }, scales: { y: { beginAtZero: true } } }
   });
 }
 
 // --- LOGOUT SYSTEM ---
 const logoutBtn = document.getElementById("logoutBtn");
-if(logoutBtn){
-  logoutBtn.onclick = function(){
+if (logoutBtn) {
+  logoutBtn.onclick = function() {
     localStorage.removeItem("adminLoggedIn");
     window.location.href = "login.html";
   };
