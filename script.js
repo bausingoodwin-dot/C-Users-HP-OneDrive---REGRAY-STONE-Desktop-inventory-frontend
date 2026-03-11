@@ -6,8 +6,8 @@ let history = JSON.parse(localStorage.getItem("history")) || [];
 const inventoryTable = document.getElementById("inventoryTable");
 const historyTable = document.getElementById("historyTable");
 const productSelect = document.getElementById("productSelect");
-const step2ProductSelect = document.getElementById("step2ProductSelect"); // Step 2 select box
-const updateProductSelect = document.getElementById("updateProductSelect"); // Update image select box
+const step2ProductSelect = document.getElementById("step2ProductSelect");
+const updateProductSelect = document.getElementById("updateProductSelect");
 const updateImageInput = document.getElementById("updateImage");
 const updateImageBtn = document.getElementById("updateImageBtn");
 const totalProducts = document.getElementById("totalProducts");
@@ -65,24 +65,16 @@ function renderInventory(){
 
   let stockCount = 0;
 
-  products.forEach((p, i) => {
+  products.forEach((p) => {
     stockCount += p.quantity;
 
-    // Populate all select boxes
-    const option1 = document.createElement("option");
-    option1.value = i;
-    option1.textContent = p.name;
-    productSelect.appendChild(option1);
-
-    const option2 = document.createElement("option");
-    option2.value = i;
-    option2.textContent = p.name;
-    step2ProductSelect.appendChild(option2);
-
-    const option3 = document.createElement("option");
-    option3.value = i;
-    option3.textContent = p.name;
-    updateProductSelect.appendChild(option3);
+    // Populate select boxes with unique ID
+    [productSelect, step2ProductSelect, updateProductSelect].forEach(sel => {
+      const opt = document.createElement("option");
+      opt.value = p.id;
+      opt.textContent = p.name;
+      sel.appendChild(opt);
+    });
 
     // Inventory table row
     const row = document.createElement("tr");
@@ -91,7 +83,7 @@ function renderInventory(){
       <td>${p.name}</td>
       <td>${p.category}</td>
       <td>${p.quantity}</td>
-      <td><button onclick="deleteProduct(${i})">Delete</button></td>
+      <td><button onclick="deleteProduct('${p.id}')">Delete</button></td>
     `;
     inventoryTable.appendChild(row);
   });
@@ -123,110 +115,93 @@ document.getElementById("addProductForm").addEventListener("submit", function(e)
   if(!name || !category || !quantity){ alert("Fill all fields"); return; }
 
   let image = "";
+
+  const addAndReset = () => {
+    const id = Date.now().toString(); // Unique ID
+    products.push({id, name, category, quantity, image});
+    history.push({date: new Date().toLocaleString(), product: name, type: "IN", qty: quantity});
+    saveData();
+    renderInventory();
+    this.reset();
+  };
+
   if(imageInput.files[0]){
     const reader = new FileReader();
     reader.onload = function(e){
       image = e.target.result;
-      addProduct(name, category, quantity, image);
-    }
+      addAndReset();
+    };
     reader.readAsDataURL(imageInput.files[0]);
   } else {
-    addProduct(name, category, quantity, image);
+    addAndReset();
   }
-  this.reset();
 });
-
-function addProduct(name, category, quantity, image){
-  products.push({name, category, quantity, image});
-  history.push({date:new Date().toLocaleString(), product:name, type:"IN", qty:quantity});
-  saveData();
-  renderInventory();
-}
 
 // --- STOCK IN ---
 document.getElementById("stockInBtn").onclick = function(){
-  const index = productSelect.value;
+  const id = productSelect.value;
   const qty = parseInt(document.getElementById("stockQty").value);
-  if(index === "" || !qty) return;
-  products[index].quantity += qty;
-  history.push({date:new Date().toLocaleString(), product:products[index].name, type:"IN", qty});
+  if(!id || !qty) return;
+  const product = products.find(p => p.id === id);
+  product.quantity += qty;
+  history.push({date: new Date().toLocaleString(), product: product.name, type:"IN", qty});
   saveData(); renderInventory();
   document.getElementById("stockQty").value = "";
-}
+};
 
 // --- STOCK OUT ---
 document.getElementById("stockOutBtn").onclick = function(){
-  const index = productSelect.value;
+  const id = productSelect.value;
   const qty = parseInt(document.getElementById("stockQty").value);
-  if(index === "" || !qty) return;
-  if(products[index].quantity < qty){ alert("Not enough stock"); return;}
-  products[index].quantity -= qty;
-  history.push({date:new Date().toLocaleString(), product:products[index].name, type:"OUT", qty});
+  if(!id || !qty) return;
+  const product = products.find(p => p.id === id);
+  if(product.quantity < qty){ alert("Not enough stock"); return; }
+  product.quantity -= qty;
+  history.push({date: new Date().toLocaleString(), product: product.name, type:"OUT", qty});
   saveData(); renderInventory();
   document.getElementById("stockQty").value = "";
-}
+};
 
 // --- DELETE PRODUCT ---
-function deleteProduct(i){
+function deleteProduct(id){
   if(confirm("Delete product?")){
-    products.splice(i,1);
+    products = products.filter(p => p.id !== id);
     saveData();
     renderInventory();
   }
 }
 
-// --- SEARCH & FILTER ---
-document.getElementById("search").addEventListener("input", function(){
-  const value = this.value.toLowerCase();
-  const rows = inventoryTable.getElementsByTagName("tr");
-  for(let i=0;i<rows.length;i++){
-    rows[i].style.display = rows[i].innerText.toLowerCase().includes(value)?"":"none";
-  }
-});
-document.getElementById("categoryFilter").addEventListener("change", function(){
-  const cat = this.value;
-  const rows = inventoryTable.getElementsByTagName("tr");
-  for(let i=0;i<rows.length;i++){
-    rows[i].style.display = cat==="" || rows[i].innerText.includes(cat)?"":"none";
-  }
-});
-
 // --- UPDATE PRODUCT IMAGE ---
-if(updateImageBtn){
-  updateImageBtn.onclick = function(){
-    const index = updateProductSelect.value;
-    if(index === "") { 
-      alert("Please select a product to update."); 
-      return; 
-    }
-    if(!updateImageInput.files[0]){
-      alert("Please choose an image to update.");
-      return;
-    }
-    const reader = new FileReader();
-    reader.onload = function(e){
-      products[index].image = e.target.result; // Update the image
-      saveData();
-      renderInventory();
-      alert("Product image updated successfully!");
-      updateImageInput.value = "";
-    }
-    reader.readAsDataURL(updateImageInput.files[0]);
-  }
-}
+updateImageBtn.onclick = function(){
+  const id = updateProductSelect.value;
+  if(!id){ alert("Please select a product to update."); return; }
+  if(!updateImageInput.files[0]){ alert("Please choose an image."); return; }
+
+  const reader = new FileReader();
+  reader.onload = function(e){
+    const product = products.find(p => p.id === id);
+    product.image = e.target.result;
+    saveData();
+    renderInventory();
+    alert("Product image updated successfully!");
+    updateImageInput.value = "";
+  };
+  reader.readAsDataURL(updateImageInput.files[0]);
+};
 
 // --- IMAGE PREVIEW ---
 function previewImage(src){
-  const overlay=document.createElement("div");
+  const overlay = document.createElement("div");
   overlay.style.position="fixed";
   overlay.style.top="0"; overlay.style.left="0";
   overlay.style.width="100%"; overlay.style.height="100%";
   overlay.style.background="rgba(0,0,0,0.8)";
   overlay.style.display="flex"; overlay.style.justifyContent="center";
   overlay.style.alignItems="center";
-  overlay.onclick = function(){ document.body.removeChild(overlay); }
-  const img=document.createElement("img");
-  img.src = src; img.style.maxWidth="80%";
+  overlay.onclick = () => document.body.removeChild(overlay);
+  const img = document.createElement("img");
+  img.src = src;
+  img.style.maxWidth="80%";
   img.style.maxHeight="80%";
   overlay.appendChild(img);
   document.body.appendChild(overlay);
@@ -239,14 +214,14 @@ document.getElementById("exportInventoryBtn").onclick = function(){
   const a = document.createElement("a");
   a.href = URL.createObjectURL(new Blob([csv]));
   a.download = "inventory.csv"; a.click();
-}
+};
 document.getElementById("exportTransactionsBtn").onclick = function(){
   let csv="Date,Product,Type,Quantity\n";
   history.forEach(h=>{ csv+=`${h.date},${h.product},${h.type},${h.qty}\n`; });
   const a = document.createElement("a");
   a.href = URL.createObjectURL(new Blob([csv]));
   a.download = "transactions.csv"; a.click();
-}
+};
 
 // --- CATEGORY CHART ---
 function renderChart(){
@@ -265,9 +240,9 @@ function renderChart(){
 const logoutBtn = document.getElementById("logoutBtn");
 if(logoutBtn){
   logoutBtn.onclick = function(){
-      localStorage.removeItem("adminLoggedIn");
-      window.location.href = "login.html";
-  }
+    localStorage.removeItem("adminLoggedIn");
+    window.location.href = "login.html";
+  };
 }
 
 // --- INITIAL RENDER ---
