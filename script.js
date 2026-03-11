@@ -19,6 +19,13 @@ const dashboardBtn = document.getElementById("dashboardBtn");
 const transactionsBtn = document.getElementById("transactionsBtn");
 const chartBtn = document.getElementById("chartBtn");
 
+// --- EDIT PRODUCT ELEMENTS ---
+const editProductSelect = document.getElementById("editProductSelect");
+const editName = document.getElementById("editName");
+const editCategory = document.getElementById("editCategory");
+const editQuantity = document.getElementById("editQuantity");
+const editProductBtn = document.getElementById("editProductBtn");
+
 let categoryChart;
 
 // --- SPA NAVIGATION ---
@@ -68,8 +75,8 @@ function renderInventory(){
   products.forEach((p) => {
     stockCount += p.quantity;
 
-    // Populate select boxes with unique ID
-    [productSelect, step2ProductSelect, updateProductSelect].forEach(sel => {
+    // Populate select boxes
+    [productSelect, step2ProductSelect, updateProductSelect, editProductSelect].forEach(sel => {
       const opt = document.createElement("option");
       opt.value = p.id;
       opt.textContent = p.name;
@@ -188,6 +195,61 @@ updateImageBtn.onclick = function(){
   };
   reader.readAsDataURL(updateImageInput.files[0]);
 };
+
+// --- EDIT PRODUCT ---
+editProductSelect.addEventListener("change", () => {
+  const id = editProductSelect.value;
+  if(!id){
+    editName.value = "";
+    editCategory.value = "";
+    editQuantity.value = "";
+    return;
+  }
+  const product = products.find(p => p.id === id);
+  editName.value = product.name;
+  editCategory.value = product.category;
+  editQuantity.value = product.quantity;
+});
+
+editProductBtn.addEventListener("click", () => {
+  const id = editProductSelect.value;
+  if(!id){ alert("Select a product to edit"); return; }
+
+  const product = products.find(p => p.id === id);
+  const newName = editName.value.trim();
+  const newCategory = editCategory.value;
+  const newQty = parseInt(editQuantity.value);
+
+  if(!newName || !newCategory || isNaN(newQty)){
+    alert("Fill all fields properly");
+    return;
+  }
+
+  product.name = newName;
+  product.category = newCategory;
+  product.quantity = newQty;
+
+  history.push({date:new Date().toLocaleString(), product:newName, type:"EDIT", qty:newQty});
+  saveData();
+  renderInventory();
+  alert("Product updated successfully!");
+});
+
+// --- SEARCH & FILTER ---
+document.getElementById("search").addEventListener("input", function(){
+  const value = this.value.toLowerCase();
+  const rows = inventoryTable.getElementsByTagName("tr");
+  for(let i=0;i<rows.length;i++){
+    rows[i].style.display = rows[i].innerText.toLowerCase().includes(value)?"":"none";
+  }
+});
+document.getElementById("categoryFilter").addEventListener("change", function(){
+  const cat = this.value;
+  const rows = inventoryTable.getElementsByTagName("tr");
+  for(let i=0;i<rows.length;i++){
+    rows[i].style.display = cat==="" || rows[i].innerText.includes(cat)?"":"none";
+  }
+});
 
 // --- IMAGE PREVIEW ---
 function previewImage(src){
