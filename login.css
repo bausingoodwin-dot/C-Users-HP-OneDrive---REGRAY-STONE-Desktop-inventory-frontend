@@ -1,1 +1,116 @@
+/* Reset & base */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
 
+/* Body gradient background */
+body {
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(135deg, #1e3c72, #2a5298);
+  animation: backgroundShift 10s ease infinite alternate;
+}
+
+/* Animated gradient background */
+@keyframes backgroundShift {
+  0% {background-position:0% 50%;}
+  50% {background-position:100% 50%;}
+  100% {background-position:0% 50%;}
+}
+
+/* Center wrapper */
+.login-wrapper {
+  width: 100%;
+  max-width: 400px;
+  padding: 20px;
+}
+
+/* Card style */
+.login-card {
+  background-color: #fff;
+  padding: 40px 30px;
+  border-radius: 15px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+  text-align: center;
+  animation: fadeIn 0.6s ease-out;
+}
+
+/* Fade-in animation */
+@keyframes fadeIn {
+  from {opacity:0; transform: translateY(-20px);}
+  to {opacity:1; transform: translateY(0);}
+}
+
+/* Logo */
+.login-card .logo img {
+  width: 80px;
+  margin-bottom: 20px;
+}
+
+/* Heading */
+.login-card h2 {
+  margin-bottom: 25px;
+  color: #333;
+  font-size: 26px;
+  letter-spacing: 1px;
+}
+
+/* Inputs */
+.login-card input[type="text"],
+.login-card input[type="password"] {
+  width: 100%;
+  padding: 14px 12px;
+  margin: 10px 0;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  font-size: 16px;
+  transition: all 0.3s ease;
+}
+
+.login-card input:focus {
+  border-color: #2a5298;
+  box-shadow: 0 0 10px rgba(42,82,152,0.3);
+  outline: none;
+}
+
+/* Login button */
+.login-card button {
+  width: 100%;
+  padding: 14px 0;
+  background: #2a5298;
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  font-size: 18px;
+  cursor: pointer;
+  margin-top: 15px;
+  transition: background 0.3s ease, transform 0.2s ease;
+}
+
+.login-card button:hover {
+  background: #1e3c72;
+  transform: translateY(-2px);
+}
+
+/* Error message */
+#loginForm #error {
+  margin-top: 12px;
+  font-size: 14px;
+  color: #d93025;
+  min-height: 18px;
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+  .login-card {
+    padding: 30px 20px;
+  }
+  .login-card h2 {
+    font-size: 22px;
+  }
+}
