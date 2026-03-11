@@ -1,23 +1,55 @@
-document.addEventListener("DOMContentLoaded", function() {
-    const loginForm = document.getElementById("loginForm");
-    const errorEl = document.getElementById("error");
+// Get DOM elements
+const loginForm = document.getElementById("loginForm");
+const usernameInput = document.getElementById("username");
+const passwordInput = document.getElementById("password");
+const errorMsg = document.getElementById("error");
+const loginCard = document.querySelector(".login-card");
 
-    loginForm.addEventListener("submit", function(e){
-        e.preventDefault();
+// Hardcoded admin credentials (replace with your own)
+const ADMIN_USERNAME = "admin";
+const ADMIN_PASSWORD = "password123";
 
-        const username = document.getElementById("username").value.trim();
-        const password = document.getElementById("password").value.trim();
+// Shake animation CSS
+const style = document.createElement("style");
+style.innerHTML = `
+@keyframes shake {
+  0% { transform: translateX(0); }
+  20% { transform: translateX(-8px); }
+  40% { transform: translateX(8px); }
+  60% { transform: translateX(-8px); }
+  80% { transform: translateX(8px); }
+  100% { transform: translateX(0); }
+}
+.shake {
+  animation: shake 0.5s;
+}
+`;
+document.head.appendChild(style);
 
-        // Check credentials
-        if(username === "admin" && password === "12345"){
-            localStorage.setItem("adminLoggedIn","true");
-            window.location.href = "index.html"; // your dashboard file
-        } else {
-            errorEl.textContent = "Wrong username or password";
-        }
-    });
+// Handle login
+loginForm.addEventListener("submit", function(e) {
+    e.preventDefault();
 
-    // Clear error when typing again
-    document.getElementById("username").addEventListener("input", ()=> { errorEl.textContent = ""; });
-    document.getElementById("password").addEventListener("input", ()=> { errorEl.textContent = ""; });
+    const username = usernameInput.value.trim();
+    const password = passwordInput.value.trim();
+
+    // Check credentials
+    if(username === ADMIN_USERNAME && password === ADMIN_PASSWORD) {
+        localStorage.setItem("adminLoggedIn", "true");
+        window.location.href = "index.html";
+    } else {
+        // Show error message
+        errorMsg.textContent = "Invalid username or password";
+        errorMsg.style.opacity = 0;
+        errorMsg.style.transition = "opacity 0.3s";
+        setTimeout(() => errorMsg.style.opacity = 1, 10);
+
+        // Shake card
+        loginCard.classList.remove("shake"); // reset if already shaking
+        void loginCard.offsetWidth; // force reflow
+        loginCard.classList.add("shake");
+
+        // Clear password field
+        passwordInput.value = "";
+    }
 });
