@@ -9,129 +9,29 @@
 <!-- Redirect if already logged in -->
 <script>
 if(localStorage.getItem("adminLoggedIn") === "true"){
-    window.location.href = "index.html";
+    window.location.href = "index.html"; // make sure this matches your dashboard file
 }
 </script>
-
-<style>
-  /* Basic Reset */
-  * { box-sizing: border-box; margin: 0; padding: 0; font-family: Arial, sans-serif; }
-
-  body {
-    height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background: linear-gradient(135deg, #4a90e2, #50e3c2);
-  }
-
-  .login-box {
-    background: #fff;
-    padding: 40px 30px;
-    border-radius: 10px;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-    width: 100%;
-    max-width: 400px;
-    text-align: center;
-  }
-
-  .login-box h2 {
-    margin-bottom: 30px;
-    color: #333;
-  }
-
-  .login-box input[type="text"],
-  .login-box input[type="password"] {
-    width: 100%;
-    padding: 12px 15px;
-    margin-bottom: 20px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    outline: none;
-    font-size: 16px;
-  }
-
-  .login-box button {
-    width: 100%;
-    padding: 12px;
-    background: #4a90e2;
-    border: none;
-    border-radius: 5px;
-    color: #fff;
-    font-size: 18px;
-    cursor: pointer;
-    transition: 0.3s;
-  }
-
-  .login-box button:hover {
-    background: #357ABD;
-  }
-
-  #error {
-    margin-top: 10px;
-    font-size: 14px;
-    color: red;
-  }
-
-  /* Show/hide password toggle */
-  .toggle-password {
-    position: absolute;
-    right: 20px;
-    top: 52%;
-    transform: translateY(-50%);
-    cursor: pointer;
-    color: #888;
-  }
-
-  .password-wrapper {
-    position: relative;
-  }
-
-</style>
-
 </head>
 <body>
 
-<div class="login-box">
-  <h2>Admin Login</h2>
-
-  <form id="loginForm">
-    <input type="text" id="username" placeholder="Username" required>
-    <div class="password-wrapper">
-      <input type="password" id="password" placeholder="Password" required>
-      <span class="toggle-password" onclick="togglePassword()">👁️</span>
+<div class="login-wrapper">
+  <div class="login-card">
+    <div class="logo">
+      <img src="logo.png" alt="Logo">
     </div>
-    <button type="submit">Login</button>
-    <p id="error"></p>
-  </form>
+    <h2>Admin Login</h2>
+
+    <form id="loginForm">
+      <input type="text" id="username" placeholder="Username" required autocomplete="username">
+      <input type="password" id="password" placeholder="Password" required autocomplete="current-password">
+      <button type="submit">Login</button>
+      <p id="error"></p>
+    </form>
+  </div>
 </div>
 
-<script>
-  // Toggle password visibility
-  function togglePassword(){
-    const pwd = document.getElementById("password");
-    pwd.type = pwd.type === "password" ? "text" : "password";
-  }
-
-  // LOGIN FUNCTIONALITY
-  const loginForm = document.getElementById("loginForm");
-  loginForm.addEventListener("submit", function(e){
-    e.preventDefault();
-    const username = document.getElementById("username").value.trim();
-    const password = document.getElementById("password").value;
-
-    // Replace these with your real admin credentials
-    const adminUser = "admin";
-    const adminPass = "12345";
-
-    if(username === adminUser && password === adminPass){
-      localStorage.setItem("adminLoggedIn", "true");
-      window.location.href = "index.html"; // Dashboard
-    } else {
-      document.getElementById("error").textContent = "Invalid username or password";
-    }
-  });
-</script>
+<script src="login.js"></script>
 
 </body>
 </html>
