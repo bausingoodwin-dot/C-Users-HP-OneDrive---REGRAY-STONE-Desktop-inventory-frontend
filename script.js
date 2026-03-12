@@ -1,3 +1,4 @@
+// --- script.js ---
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-app.js";
 import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-analytics.js";
 import { getFirestore, collection, getDocs, addDoc, doc, updateDoc, deleteDoc, getDoc } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-firestore.js";
@@ -18,9 +19,11 @@ const analytics = getAnalytics(app);
 const db = getFirestore(app);
 
 window.addEventListener("DOMContentLoaded", () => {
+  // --- DOM Elements ---
   const inventoryTable = document.getElementById("inventoryTable");
   const historyTable = document.getElementById("historyTable");
   const productSelect = document.getElementById("productSelect");
+  const step2ProductSelect = document.getElementById("step2ProductSelect");
   const totalProducts = document.getElementById("totalProducts");
   const totalStocks = document.getElementById("totalStocks");
   const stockQtyInput = document.getElementById("stockQty");
@@ -38,9 +41,9 @@ window.addEventListener("DOMContentLoaded", () => {
     [dashboardSection, transactionsSection, chartSection].forEach(s => s.style.display="none");
     section.style.display = "block";
   }
-  dashboardBtn.onclick = ()=>{ showSection(dashboardSection); };
-  transactionsBtn.onclick = ()=>{ showSection(transactionsSection); };
-  chartBtn.onclick = ()=>{ showSection(chartSection); renderChart(); };
+  dashboardBtn.onclick = ()=>{ showSection(dashboardSection); dashboardBtn.classList.add("active"); transactionsBtn.classList.remove("active"); chartBtn.classList.remove("active"); };
+  transactionsBtn.onclick = ()=>{ showSection(transactionsSection); dashboardBtn.classList.remove("active"); transactionsBtn.classList.add("active"); chartBtn.classList.remove("active"); };
+  chartBtn.onclick = ()=>{ showSection(chartSection); dashboardBtn.classList.remove("active"); transactionsBtn.classList.remove("active"); chartBtn.classList.add("active"); renderChart(); };
 
   // --- FETCH DATA ---
   async function fetchData(){
@@ -57,18 +60,22 @@ window.addEventListener("DOMContentLoaded", () => {
     const {products, history} = await fetchData();
     inventoryTable.innerHTML = "";
     productSelect.innerHTML = '<option value="">Select Product</option>';
+    step2ProductSelect.innerHTML = '<option value="">Select Product</option>';
 
     let stockCount = 0;
     products.forEach(p => {
       stockCount += p.quantity;
 
-      const opt = document.createElement("option");
-      opt.value = p.id;
-      opt.textContent = p.name;
-      productSelect.appendChild(opt);
+      [productSelect, step2ProductSelect].forEach(sel => {
+        const opt = document.createElement("option");
+        opt.value = p.id;
+        opt.textContent = p.name;
+        sel.appendChild(opt);
+      });
 
       const row = document.createElement("tr");
       row.innerHTML = `
+        <td>-</td>
         <td>${p.name}</td>
         <td>${p.category}</td>
         <td>${p.quantity}</td>
@@ -117,7 +124,7 @@ window.addEventListener("DOMContentLoaded", () => {
     if(!name || !category || !quantity){ alert("Fill all fields"); return; }
 
     const productRef = await addDoc(collection(db,"products"), {name, category, quantity});
-    await addDoc(collection(db,"history"), {date:new Date(), product:name, productId:productRef.id, type:"IN", qty:quantity});
+    await addDoc(collection(db,"history"), {date: new Date(), product: name, productId: productRef.id, type: "IN", qty: quantity});
     renderInventory();
     this.reset();
   });
@@ -134,7 +141,7 @@ window.addEventListener("DOMContentLoaded", () => {
     if(!isIn && productData.quantity < qty){ alert("Not enough stock"); return; }
 
     await updateDoc(productRef, {quantity: isIn ? productData.quantity + qty : productData.quantity - qty});
-    await addDoc(collection(db,"history"), {date: new Date(), product:productData.name, productId, type:isIn?"IN":"OUT", qty});
+    await addDoc(collection(db,"history"), {date: new Date(), product: productData.name, productId, type: isIn?"IN":"OUT", qty});
     stockQtyInput.value = "";
     renderInventory();
   }
