@@ -4,12 +4,12 @@ import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.10.0/firebas
 import { getFirestore, collection, getDocs, addDoc, doc, updateDoc, deleteDoc, getDoc } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-firestore.js";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-storage.js";
 
-// --- Firebase config ---
+// --- Firebase config (fixed bucket) ---
 const firebaseConfig = {
   apiKey: "AIzaSyBGPcbKoiXo-Sd3KpoYjjLcVifTKpgQnCE",
   authDomain: "regray-inventory-system.firebaseapp.com",
   projectId: "regray-inventory-system",
-  storageBucket: "regray-inventory-system.firebasestorage.app",
+  storageBucket: "regray-inventory-system.appspot.com", // <-- FIXED
   messagingSenderId: "899045696177",
   appId: "1:899045696177:web:deec1a0522f5811c75f890",
   measurementId: "G-RWMZBWHZ5L"
@@ -135,11 +135,17 @@ window.addEventListener("DOMContentLoaded", () => {
     if(!name||!category||!quantity){ alert("Fill all fields"); return; }
 
     let imageURL = "";
-    if(imageInput.files[0]){
+    if(imageInput.files.length > 0){
       const file = imageInput.files[0];
-      const storageRef = ref(storage,"products/"+Date.now()+"_"+file.name);
-      await uploadBytes(storageRef,file);
-      imageURL = await getDownloadURL(storageRef);
+      const storageRef = ref(storage, `products/${Date.now()}_${file.name}`);
+      try{
+        await uploadBytes(storageRef, file);
+        imageURL = await getDownloadURL(storageRef);
+      }catch(err){
+        console.error("Image upload error:", err);
+        alert("Image upload failed");
+        return;
+      }
     }
 
     const productRef = await addDoc(collection(db,"products"), {name, category, quantity, image: imageURL});
@@ -173,13 +179,18 @@ window.addEventListener("DOMContentLoaded", () => {
     const file = updateImageInput.files[0];
     if(!productId){ alert("Select product"); return; }
     if(!file){ alert("Choose image"); return; }
-    const storageRef = ref(storage,"products/"+Date.now()+"_"+file.name);
-    await uploadBytes(storageRef,file);
-    const imageURL = await getDownloadURL(storageRef);
-    await updateDoc(doc(db,"products",productId), {image:imageURL});
-    alert("Image updated");
-    updateImageInput.value="";
-    renderInventory();
+    const storageRef = ref(storage, `products/${Date.now()}_${file.name}`);
+    try{
+      await uploadBytes(storageRef,file);
+      const imageURL = await getDownloadURL(storageRef);
+      await updateDoc(doc(db,"products",productId), {image:imageURL});
+      alert("Image updated");
+      updateImageInput.value="";
+      renderInventory();
+    }catch(err){
+      console.error("Image update failed:", err);
+      alert("Image update failed");
+    }
   };
 
   // --- IMAGE PREVIEW ---
