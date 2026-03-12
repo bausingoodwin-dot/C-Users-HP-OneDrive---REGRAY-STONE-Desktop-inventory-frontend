@@ -1,55 +1,22 @@
-// Get DOM elements
-const loginForm = document.getElementById("loginForm");
-const usernameInput = document.getElementById("username");
-const passwordInput = document.getElementById("password");
-const errorMsg = document.getElementById("error");
-const loginCard = document.querySelector(".login-card");
+// Simple login system using localStorage
+window.addEventListener("DOMContentLoaded", () => {
+  const loginForm = document.getElementById("loginForm");
+  const loginError = document.getElementById("loginError");
 
-// Hardcoded admin credentials (replace with your own)
-const ADMIN_USERNAME = "admin";
-const ADMIN_PASSWORD = "password123";
+  // Replace with your own admin credentials
+  const ADMIN_USERNAME = "admin";
+  const ADMIN_PASSWORD = "admin123";
 
-// Shake animation CSS
-const style = document.createElement("style");
-style.innerHTML = `
-@keyframes shake {
-  0% { transform: translateX(0); }
-  20% { transform: translateX(-8px); }
-  40% { transform: translateX(8px); }
-  60% { transform: translateX(-8px); }
-  80% { transform: translateX(8px); }
-  100% { transform: translateX(0); }
-}
-.shake {
-  animation: shake 0.5s;
-}
-`;
-document.head.appendChild(style);
-
-// Handle login
-loginForm.addEventListener("submit", function(e) {
+  loginForm.addEventListener("submit", (e) => {
     e.preventDefault();
+    const username = document.getElementById("username").value.trim();
+    const password = document.getElementById("password").value.trim();
 
-    const username = usernameInput.value.trim();
-    const password = passwordInput.value.trim();
-
-    // Check credentials
-    if(username === ADMIN_USERNAME && password === ADMIN_PASSWORD) {
-        localStorage.setItem("adminLoggedIn", "true");
-        window.location.href = "index.html";
+    if(username === ADMIN_USERNAME && password === ADMIN_PASSWORD){
+      localStorage.setItem("adminLoggedIn", "true");
+      window.location.href = "index.html"; // redirect to dashboard
     } else {
-        // Show error message
-        errorMsg.textContent = "Invalid username or password";
-        errorMsg.style.opacity = 0;
-        errorMsg.style.transition = "opacity 0.3s";
-        setTimeout(() => errorMsg.style.opacity = 1, 10);
-
-        // Shake card
-        loginCard.classList.remove("shake"); // reset if already shaking
-        void loginCard.offsetWidth; // force reflow
-        loginCard.classList.add("shake");
-
-        // Clear password field
-        passwordInput.value = "";
+      loginError.textContent = "Invalid username or password";
     }
+  });
 });
