@@ -1,7 +1,10 @@
 // --- script.js ---
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-app.js";
 import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-analytics.js";
-import { getFirestore, collection, getDocs, addDoc, doc, updateDoc, deleteDoc, getDoc } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-firestore.js";
+import { 
+  getFirestore, collection, getDocs, addDoc, doc, updateDoc, deleteDoc, getDoc 
+} from "https://www.gstatic.com/firebasejs/12.10.0/firebase-firestore.js";
+import { Chart } from "https://cdn.jsdelivr.net/npm/chart.js";
 
 // --- Firebase config ---
 const firebaseConfig = {
@@ -19,7 +22,6 @@ const analytics = getAnalytics(app);
 const db = getFirestore(app);
 
 window.addEventListener("DOMContentLoaded", () => {
-
   // --- DOM ELEMENTS ---
   const inventoryTable = document.getElementById("inventoryTable");
   const historyTable = document.getElementById("historyTable");
@@ -39,12 +41,12 @@ window.addEventListener("DOMContentLoaded", () => {
 
   // --- SPA Navigation ---
   function showSection(section){
-    [dashboardSection, transactionsSection, chartSection].forEach(s => s.style.display="none");
+    [dashboardSection, transactionsSection, chartSection].forEach(s => s.style.display = "none");
     section.style.display = "block";
   }
-  dashboardBtn.onclick = ()=>{ showSection(dashboardSection); dashboardBtn.classList.add("active"); transactionsBtn.classList.remove("active"); chartBtn.classList.remove("active"); };
-  transactionsBtn.onclick = ()=>{ showSection(transactionsSection); dashboardBtn.classList.remove("active"); transactionsBtn.classList.add("active"); chartBtn.classList.remove("active"); };
-  chartBtn.onclick = ()=>{ showSection(chartSection); dashboardBtn.classList.remove("active"); transactionsBtn.classList.remove("active"); chartBtn.classList.add("active"); renderChart(); };
+  dashboardBtn.onclick = () => { showSection(dashboardSection); dashboardBtn.classList.add("active"); transactionsBtn.classList.remove("active"); chartBtn.classList.remove("active"); };
+  transactionsBtn.onclick = () => { showSection(transactionsSection); dashboardBtn.classList.remove("active"); transactionsBtn.classList.add("active"); chartBtn.classList.remove("active"); };
+  chartBtn.onclick = () => { showSection(chartSection); dashboardBtn.classList.remove("active"); transactionsBtn.classList.remove("active"); chartBtn.classList.add("active"); renderChart(); };
 
   // --- FETCH DATA ---
   async function fetchData(){
@@ -106,7 +108,7 @@ window.addEventListener("DOMContentLoaded", () => {
 
   // --- RENDER HISTORY ---
   function renderHistory(historyData){
-    historyTable.innerHTML="";
+    historyTable.innerHTML = "";
     historyData.forEach(h => {
       const dateValue = h.date?.seconds ? new Date(h.date.seconds*1000) : new Date(h.date);
       const row = document.createElement("tr");
@@ -167,7 +169,7 @@ window.addEventListener("DOMContentLoaded", () => {
   document.getElementById("exportInventoryBtn").onclick = async ()=>{
     const {products} = await fetchData();
     let csv = "Product,Category,Stock\n";
-    products.forEach(p=>csv += `${p.name},${p.category},${p.quantity}\n`);
+    products.forEach(p => csv += `${p.name},${p.category},${p.quantity}\n`);
     const a = document.createElement("a");
     a.href = URL.createObjectURL(new Blob([csv],{type:"text/csv"}));
     a.download = "inventory.csv";
