@@ -51,7 +51,7 @@ if(localStorage.getItem("adminLoggedIn") !== "true"){
       </div>
 
       <!-- Add New Product -->
-      <section class="form-section">
+      <div class="form-section">
         <h2>Add New Product</h2>
         <form id="addProductForm">
           <input type="text" id="name" placeholder="Product Name" required>
@@ -70,152 +70,10 @@ if(localStorage.getItem("adminLoggedIn") !== "true"){
           <input type="number" id="quantity" placeholder="Quantity" required>
           <button type="submit">Add Product</button>
         </form>
-      </section>
-
-      <!-- Stock Management -->
-      <section class="form-section">
-        <h2>Stock Management</h2>
-        <select id="productSelect">
-          <option value="">Select Product</option>
-        </select>
-        <input type="number" id="stockQty" placeholder="Quantity">
-        <button id="stockInBtn">Stock In</button>
-        <button id="stockOutBtn">Stock Out</button>
-      </section>
-
-      <!-- Step 2 -->
-      <section class="form-section">
-        <h2>Step 2: Select Product</h2>
-        <select id="step2ProductSelect">
-          <option value="">Select Product</option>
-        </select>
-      </section>
-
-      <!-- Inventory Table -->
-      <section class="table-section">
-        <h2>Inventory</h2>
-        <table>
-          <thead>
-            <tr>
-              <th>Image</th>
-              <th>Product</th>
-              <th>Category</th>
-              <th>Stock</th>
-              <th>Action</th>
-            </tr>
-          </thead>
-          <tbody id="inventoryTable"></tbody>
-        </table>
-      </section>
-
-      <button id="exportInventoryBtn">Export Inventory CSV</button>
-
-    </section>
-
-    <!-- STOCK CHART -->
-    <section id="chartSection" style="display:none">
-      <h2>Stock per Category</h2>
-      <canvas id="categoryChart"></canvas>
-    </section>
-
-    <!-- TRANSACTIONS -->
-    <section id="transactionsSection" style="display:none">
-      <h2>Transactions</h2>
-      <table>
-        <thead>
-          <tr>
-            <th>Date</th>
-            <th>Product</th>
-            <th>Type</th>
-            <th>Quantity</th>
-          </tr>
-        </thead>
-        <tbody id="historyTable"></tbody>
-      </table>
-      <button id="exportTransactionsBtn">Export Transactions CSV</button>
-    </section>
-
-  </main>
-</div>
-
-<script type="module" src="script.js"></script>
-</body>
-</html><!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Regray Stone & Furniture Inventory System</title>
-
-<link rel="stylesheet" href="style.css">
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-<script>
-/* LOGIN PROTECTION */
-if(localStorage.getItem("adminLoggedIn") !== "true"){
-    window.location.href = "login.html";
-}
-</script>
-
-</head>
-<body>
-
-<div class="wrapper">
-
-  <nav class="sidebar">
-    <h2>Inventory System</h2>
-    <ul>
-      <li><button id="dashboardBtn" class="nav-btn active">Dashboard</button></li>
-      <li><button id="transactionsBtn" class="nav-btn">Transactions</button></li>
-      <li><button id="chartBtn" class="nav-btn">Stock Chart</button></li>
-      <li><button id="logoutBtn" class="nav-btn">Logout</button></li>
-    </ul>
-  </nav>
-
-  <main class="main-content">
-
-    <header>
-      <h1>REGRAY STONE AND FURNITURE CORPORATION</h1>
-    </header>
-
-    <!-- DASHBOARD -->
-    <section id="dashboardSection">
-
-      <div class="summary">
-        <div class="card">
-          <h3>Total Products</h3>
-          <p id="totalProducts">0</p>
-        </div>
-        <div class="card">
-          <h3>Total Stocks</h3>
-          <p id="totalStocks">0</p>
-        </div>
       </div>
 
-      <!-- Add New Product -->
-      <section class="form-section">
-        <h2>Add New Product</h2>
-        <form id="addProductForm">
-          <input type="text" id="name" placeholder="Product Name" required>
-          <select id="category" required>
-            <option value="">Select Category</option>
-            <option>PATAGONIA</option>
-            <option>QUARTZITE</option>
-            <option>ONYX</option>
-            <option>MARBLE</option>
-            <option>TRAVERTINE</option>
-            <option>LIMESTONE</option>
-            <option>GRANITE</option>
-            <option>CRAZY CUT</option>
-            <option>COBBLESTONE</option>
-          </select>
-          <input type="number" id="quantity" placeholder="Quantity" required>
-          <button type="submit">Add Product</button>
-        </form>
-      </section>
-
       <!-- Stock Management -->
-      <section class="form-section">
+      <div class="form-section">
         <h2>Stock Management</h2>
         <select id="productSelect">
           <option value="">Select Product</option>
@@ -223,18 +81,18 @@ if(localStorage.getItem("adminLoggedIn") !== "true"){
         <input type="number" id="stockQty" placeholder="Quantity">
         <button id="stockInBtn">Stock In</button>
         <button id="stockOutBtn">Stock Out</button>
-      </section>
+      </div>
 
       <!-- Step 2 -->
-      <section class="form-section">
+      <div class="form-section">
         <h2>Step 2: Select Product</h2>
         <select id="step2ProductSelect">
           <option value="">Select Product</option>
         </select>
-      </section>
+      </div>
 
       <!-- Inventory Table -->
-      <section class="table-section">
+      <div class="table-section">
         <h2>Inventory</h2>
         <table>
           <thead>
@@ -248,7 +106,7 @@ if(localStorage.getItem("adminLoggedIn") !== "true"){
           </thead>
           <tbody id="inventoryTable"></tbody>
         </table>
-      </section>
+      </div>
 
       <button id="exportInventoryBtn">Export Inventory CSV</button>
 
