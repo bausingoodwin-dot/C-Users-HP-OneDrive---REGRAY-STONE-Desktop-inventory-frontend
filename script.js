@@ -19,7 +19,8 @@ const analytics = getAnalytics(app);
 const db = getFirestore(app);
 
 window.addEventListener("DOMContentLoaded", () => {
-  // --- DOM Elements ---
+
+  // --- DOM ELEMENTS ---
   const inventoryTable = document.getElementById("inventoryTable");
   const historyTable = document.getElementById("historyTable");
   const productSelect = document.getElementById("productSelect");
@@ -166,7 +167,7 @@ window.addEventListener("DOMContentLoaded", () => {
   document.getElementById("exportInventoryBtn").onclick = async ()=>{
     const {products} = await fetchData();
     let csv = "Product,Category,Stock\n";
-    products.forEach(p=>csv += `${p.name},${p.category},${p.quantity}\n`);
+    products.forEach(p => csv += `${p.name},${p.category},${p.quantity}\n`);
     const a = document.createElement("a");
     a.href = URL.createObjectURL(new Blob([csv],{type:"text/csv"}));
     a.download = "inventory.csv";
