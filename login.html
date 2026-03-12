@@ -11,13 +11,49 @@
 <div class="login-wrapper">
   <h1>Admin Login</h1>
   <form id="loginForm">
-    <input type="text" id="username" placeholder="Username" required>
+    <input type="email" id="email" placeholder="Email" required>
     <input type="password" id="password" placeholder="Password" required>
     <button type="submit">Login</button>
   </form>
   <p id="loginError" style="color:red;"></p>
 </div>
 
-<script type="module" src="login.js"></script>
+<!-- Firebase SDKs -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-app.js";
+  import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-auth.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyBGPcbKoiXo-Sd3KpoYjjLcVifTKpgQnCE",
+    authDomain: "regray-inventory-system.firebaseapp.com",
+    projectId: "regray-inventory-system",
+    storageBucket: "regray-inventory-system.firebasestorage.app",
+    messagingSenderId: "899045696177",
+    appId: "1:899045696177:web:deec1a0522f5811c75f890",
+    measurementId: "G-RWMZBWHZ5L"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+
+  const loginForm = document.getElementById("loginForm");
+  const loginError = document.getElementById("loginError");
+
+  loginForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const email = document.getElementById("email").value.trim();
+    const password = document.getElementById("password").value.trim();
+
+    try {
+      await signInWithEmailAndPassword(auth, email, password);
+      localStorage.setItem("adminLoggedIn", "true");
+      window.location.href = "index.html";
+    } catch (err) {
+      console.error(err);
+      loginError.textContent = "Invalid email or password";
+    }
+  });
+</script>
+
 </body>
 </html>
